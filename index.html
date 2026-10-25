@@ -5729,6 +5729,27 @@
         </label>
       </div>
 
+      <!-- Discord Webhook プッシュ通知設定 & ステータス -->
+      <div class="notif-desktop-row" style="margin-top:6px; padding-top:10px; border-top:1px dashed var(--border-subtle);">
+        <div style="min-width:0;">
+          <div class="notif-desktop-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:#5865F2;flex-shrink:0;">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            <span>Discord Webhook 自動連携</span>
+          </div>
+          <div id="discord-notif-status" class="notif-desktop-status ok">
+            Discord通知: 有効 (Webhook接続済)
+          </div>
+        </div>
+        <label class="ui-switch" title="Discord通知のオン/オフ">
+          <input id="discord-notif-toggle" type="checkbox" checked onchange="toggleDiscordNotificationsEnabled(this.checked)" />
+          <span class="ui-switch-track">
+            <span class="ui-switch-thumb"></span>
+          </span>
+        </label>
+      </div>
+
       <!-- 通知のタイトル・本文を自由に変更してWindows画面右下へ送信できるフォーム -->
       <div class="notif-custom-form">
         <div class="notif-custom-label">
@@ -5749,10 +5770,14 @@
           value="Windows画面右下（OS通知領域）へのトースト通知テストです。"
           placeholder="通知の本文を入力..."
         />
-        <div class="notif-btn-group">
+        <div class="notif-btn-group" style="grid-template-columns: 1fr auto auto;">
           <button type="button" class="btn-primary notif-test-btn" onclick="triggerCustomOsNotification()">
             <i data-lucide="send" width="14" height="14"></i>
-            <span>Windows右下に通知を送信</span>
+            <span>通知を送信 (OS & Discord)</span>
+          </button>
+          <button type="button" class="subtle-data-btn" onclick="triggerDiscordTestNotification()" title="Discordチャンネルへテストメッセージを直接送信">
+            <i data-lucide="message-square" width="13" height="13" style="color:#5865F2;"></i>
+            <span>Discord</span>
           </button>
           <button type="button" class="subtle-data-btn" onclick="triggerTestNotification()" title="サンプル文面を切り替えて送信">
             <i data-lucide="shuffle" width="13" height="13"></i>
@@ -8230,6 +8255,11 @@
         await loadAppStateFromSupabase(true);
       } else {
         showToast('☁️ Supabase クラウド同期完了', 'PC・スマホ（iPhone）間で最新の状態が同期されました。', 'cloud');
+        void sendDiscordNotification({
+          title: '☁️ Supabase クラウド同期完了',
+          message: 'ダッシュボードの全データ（メモ・カレンダー・Wishlist等）がPC・スマホ間で正常に同期されました。',
+          eventType: 'sync'
+        });
       }
     }
 
@@ -8958,16 +8988,26 @@
               const alertKey = `${ev.id}-${todayStr}-soon`;
               if (!notifiedEventKeys.has(alertKey)) {
                 notifiedEventKeys.add(alertKey);
+                const soonMsg = `「${ev.title}」が ${ev.time} に開始されます（あと ${diffMin} 分）`;
+                // Discordへ予定接近のアラートをプッシュ通知
+                void sendDiscordNotification({
+                  title: '⏰ 予定が近づいています',
+                  message: soonMsg,
+                  urgent: true,
+                  eventType: 'schedule'
+                });
+
                 if (desktopNotifEnabled) {
                   showDesktopNotificationBanner({
                     title: '⏰ 予定が近づいています',
-                    message: `「${ev.title}」が ${ev.time} に開始されます（あと ${diffMin} 分）`,
+                    message: soonMsg,
                     subtitle: 'AETHER // SCHEDULE ALERT',
                     icon: 'calendar-clock',
                     urgent: true,
                     primaryLabel: '予定を確認',
                     onPrimary: () => switchView('calendar'),
-                    sendOsNotification: true
+                    sendOsNotification: true,
+                    sendDiscord: false
                   });
                 } else {
                   showToast('⏰ 予定が近づいています', `「${ev.title}」が ${ev.time} に開始されます`, 'bell-ring');
@@ -9434,6 +9474,146 @@
       return false;
     }
 
+    /* ========================================================================
+       9.4 DISCORD WEBHOOK NOTIFICATION ENGINE (ASYNCHRONOUS PUSH NOTIFICATIONS)
+       ======================================================================== */
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1563839776828690462/BQcMUMqRctzYIk1CDoHRsmt1x9GCrRrnn77MEH8jywOPj7Q2HLoqx9lTmGWhJXD9Alnz';
+    const DISCORD_NOTIF_ENABLED_KEY = 'aether_discord_notif_enabled_v1';
+    let discordNotifEnabled = localStorage.getItem(DISCORD_NOTIF_ENABLED_KEY) !== '0';
+
+    /**
+     * 指定したタイトルやメッセージをDiscordのWebhook URLへPOST送信する非同期関数
+     * ネット未接続時や送信エラー時でもアプリ本体の動作が止まらないよう try...catch による堅牢なエラーハンドリング
+     */
+    async function sendDiscordNotification(options = {}) {
+      if (!discordNotifEnabled) return false;
+
+      let title = 'AETHER 通知';
+      let message = '';
+      let eventType = 'notification';
+      let color = 0x8b5cf6; // AETHERパープル
+      let fields = [];
+
+      if (typeof options === 'string') {
+        message = options;
+      } else if (typeof options === 'object' && options !== null) {
+        title = options.title || title;
+        message = options.message || options.body || options.description || '';
+        eventType = options.eventType || eventType;
+
+        if (options.urgent) {
+          color = 0xef4444; // アラート・緊急: 赤
+        } else if (typeof options.color === 'number') {
+          color = options.color;
+        } else if (eventType === 'calendar' || eventType === 'schedule') {
+          color = 0x3b82f6; // カレンダー予定: 青
+        } else if (eventType === 'save' || eventType === 'sync') {
+          color = 0x10b981; // データ保存・クラウド同期: エメラルドグリーン
+        } else if (eventType === 'wishlist') {
+          color = 0xec4899; // ウィッシュリスト: ピンク
+        } else if (eventType === 'memo' || eventType === 'notebook') {
+          color = 0xf59e0b; // ノート/メモ: アンバー
+        }
+
+        if (Array.isArray(options.fields)) {
+          fields = options.fields;
+        }
+      }
+
+      if (!title && !message) return false;
+
+      const now = new Date();
+      const timeStr = now.toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      const payload = {
+        username: '【🛸】通知',
+        avatar_url: 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/layout-grid.png',
+        embeds: [
+          {
+            title: String(title),
+            description: String(message),
+            color: color,
+            fields: fields,
+            footer: {
+              text: `AETHER // Chrono-Bento Personal OS • ${timeStr}`
+            },
+            timestamp: now.toISOString()
+          }
+        ]
+      };
+
+      try {
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok && response.status !== 204) {
+          console.warn('sendDiscordNotification HTTP status:', response.status);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        // ネットワーク切断時やCORSエラー時でも本体アプリの動作を止めないよう安全に補足
+        console.warn('sendDiscordNotification exception (safe ignored):', err);
+        return false;
+      }
+    }
+
+    function updateDiscordNotifUI() {
+      const toggleEl = document.getElementById('discord-notif-toggle');
+      const statusEl = document.getElementById('discord-notif-status');
+      if (toggleEl) toggleEl.checked = discordNotifEnabled;
+      if (!statusEl) return;
+      statusEl.classList.remove('ok', 'warn');
+      if (discordNotifEnabled) {
+        statusEl.textContent = 'Discord通知: 有効 (Webhook自動配信中)';
+        statusEl.classList.add('ok');
+      } else {
+        statusEl.textContent = '現在オフ — Discordへの送信を停止中';
+        statusEl.classList.add('warn');
+      }
+    }
+
+    function toggleDiscordNotificationsEnabled(checked) {
+      discordNotifEnabled = Boolean(checked);
+      try {
+        localStorage.setItem(DISCORD_NOTIF_ENABLED_KEY, discordNotifEnabled ? '1' : '0');
+      } catch (e) {}
+      updateDiscordNotifUI();
+    }
+
+    async function triggerDiscordTestNotification() {
+      const titleInput = document.getElementById('os-notif-title-input');
+      const bodyInput = document.getElementById('os-notif-body-input');
+      const customTitle = (titleInput?.value || '').trim() || '🛰️ AETHER Discordプッシュ通知テスト';
+      const customBody = (bodyInput?.value || '').trim() || 'Discord Webhook連携のテストメッセージです。通知や重要イベントが発生するとDiscordへ自動配信されます。';
+
+      const ok = await sendDiscordNotification({
+        title: customTitle,
+        message: customBody,
+        eventType: 'notification',
+        urgent: false
+      });
+
+      if (ok) {
+        showToast('🚀 Discord送信成功', 'Discordチャンネルへメッセージを送信しました。', 'send');
+      } else {
+        showToast('⚠️ Discord送信結果', '送信処理が完了しました（通信状態をご確認ください）。', 'info');
+      }
+    }
+
     /**
      * フロントエンドJavaScriptから呼び出すことで、
      * Windowsの画面右下（OSの通知領域）にOS標準のデスクトップ通知バナー（トースト通知）を飛ばす関数
@@ -9701,6 +9881,16 @@
       // 1. Windowsの画面右下（OS通知領域）へOS標準トースト通知を送信
       // 2. アプリ内の右下通知バナー（.notif-banner）は表示しない
       // 3. その代わり、画面右上の通知ボタン（ベル）からふきだし形式で通知ポップアップを表示する
+      // Discord Webhook への自動プッシュ通知連動
+      if (options.sendDiscord !== false) {
+        void sendDiscordNotification({
+          title,
+          message,
+          urgent,
+          eventType: 'notification'
+        });
+      }
+
       if (desktopNotifEnabled) {
         const stack = document.getElementById('notif-banner-stack');
         if (stack) stack.innerHTML = '';
@@ -10668,6 +10858,11 @@
           updatedAt: nowIso
         });
         showToast('追加しました', `「${name}」をウィッシュリストに追加しました。`, 'gift');
+        void sendDiscordNotification({
+          title: '🎁 新しいウィッシュリストを追加しました',
+          message: `アイテム: 「${name}」${price ? `\n目安金額: ${formatYenPrice(price)}` : ''}${url ? `\nURL: ${url}` : ''}`,
+          eventType: 'wishlist'
+        });
       }
 
       normalizeWishlistOrders();
@@ -12011,6 +12206,11 @@
       const holidays = getCombinedHolidays();
       renderSelectedDaySidebar(holidays[selectedDateStr]);
       showToast('📅 予定を登録しました', `${selectedDateStr} ${timeIn.value || ''} 「${title}」`, 'calendar-check');
+      void sendDiscordNotification({
+        title: '📅 カレンダー予定を登録しました',
+        message: `【${selectedDateStr} ${timeIn.value || '終日'}】「${title}」`,
+        eventType: 'calendar'
+      });
     }
 
     function deleteCalendarEvent(id) {
@@ -12111,6 +12311,11 @@
       a.click();
       URL.revokeObjectURL(url);
       showToast('バックアップ保存完了', 'JSONファイルとしてデータを書き出しました。', 'download');
+      void sendDiscordNotification({
+        title: '💾 データバックアップ保存',
+        message: `AETHERのバックアップJSONファイル (aether_backup_${formatYMD(new Date())}.json) を正常に出力しました。`,
+        eventType: 'save'
+      });
     }
 
     function triggerImportAppData() {
@@ -12218,6 +12423,7 @@
       loadWishlistData();
       renderWishlistView();
       updateDesktopNotifUI();
+      updateDiscordNotifUI();
       initCustomTitlebar();
       getAppFullscreenState().then(updateFullscreenButtonUI).catch(() => {});
 
