@@ -4635,9 +4635,818 @@
         font-size: max(16px, 1em) !important;
       }
     }
+
+    /* ==========================================================================
+       11. SUPABASE PASSWORD AUTHENTICATION GATE (SECURITY LOCK OVERLAY)
+       ========================================================================== */
+    .auth-gate-overlay {
+      position: fixed;
+      inset: 0;
+      top: var(--titlebar-height, 0px);
+      z-index: 2900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 20% 20%, hsla(var(--hue-primary), 75%, 26%, 0.45), transparent 55%),
+        radial-gradient(circle at 80% 80%, hsla(var(--hue-accent), 75%, 24%, 0.40), transparent 55%),
+        rgba(8, 6, 18, 0.88);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      animation: fadeView 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.light-mode .auth-gate-overlay {
+      background:
+        radial-gradient(circle at 20% 20%, hsla(var(--hue-primary), 75%, 82%, 0.55), transparent 55%),
+        radial-gradient(circle at 80% 80%, hsla(var(--hue-accent), 75%, 84%, 0.50), transparent 55%),
+        rgba(244, 242, 252, 0.90);
+    }
+
+    body.auth-locked .auth-gate-overlay {
+      display: flex;
+    }
+
+    body.auth-locked .main-container,
+    body.auth-locked .navbar-wrapper {
+      filter: blur(14px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .auth-gate-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-highlight);
+      border-radius: 26px;
+      padding: 32px 28px 26px;
+      box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.65), 0 0 36px var(--accent-soft);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .auth-gate-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary), transparent);
+    }
+
+    @keyframes authShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .auth-gate-card.shake {
+      animation: authShake 0.38s ease;
+    }
+
+    .auth-gate-icon-wrap {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 30px var(--accent-glow);
+    }
+
+    .auth-gate-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: var(--accent-primary);
+      margin-bottom: 6px;
+    }
+
+    .auth-gate-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .auth-gate-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .auth-gate-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .auth-input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-input-leading {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      display: inline-flex;
+      pointer-events: none;
+    }
+
+    .auth-gate-input {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 46px 12px 42px;
+      border-radius: 14px;
+      border: 1px solid var(--border-highlight);
+      background: var(--bg-surface-inner);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 16px !important;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .auth-gate-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .auth-eye-btn {
+      position: absolute;
+      right: 6px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+
+    .auth-eye-btn:hover {
+      color: var(--text-primary);
+      background: rgba(128, 128, 128, 0.12);
+    }
+
+    .auth-submit-btn {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 14px;
+      font-size: 0.94rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .auth-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .auth-remember-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--bg-surface-inner);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .auth-gate-feedback {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .auth-gate-feedback.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    body.light-mode .auth-gate-feedback.error {
+      color: #dc2626;
+    }
+
+    .auth-gate-feedback.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
+    body.light-mode .auth-gate-feedback.success {
+      color: #059669;
+    }
+
+    .auth-gate-details {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-subtle);
+      text-align: left;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .auth-gate-details summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 4px 0;
+      user-select: none;
+    }
+
+    .auth-gate-details-body {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Mobile Touch Support for Mini Menu Popover */
+    .mini-menu-bar-popover.open {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) scale(1) !important;
+    }
+
+    /* ==========================================================================
+       12. SMARTPHONE / iPHONE RESPONSIVE & TOUCH UI OPTIMIZATION (<= 768px)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      :root {
+        --radius-card: 20px;
+      }
+
+      html, body {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden !important;
+      }
+
+      /* 上部固定ヘッダー＋下部固定ナビゲーション用の余白確保 */
+      body:not(.tauri-desktop-env) {
+        padding-top: calc(68px + env(safe-area-inset-top, 0px)) !important;
+        padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+
+      body.tauri-desktop-env {
+        padding-top: calc(var(--titlebar-height, 36px) + 64px) !important;
+        padding-bottom: 92px !important;
+      }
+
+      /* 1. 固定ヘッダー（上部）と固定ボトムナビゲーション（下部）への分離でスッキリ表示 */
+      .navbar-wrapper {
+        top: calc(env(safe-area-inset-top, 0px) + 6px);
+        padding: 0 10px;
+        max-width: 100vw;
+      }
+
+      body.tauri-desktop-env .navbar-wrapper {
+        top: calc(var(--titlebar-height, 36px) + 6px);
+      }
+
+      .navbar {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 18px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .brand-sub {
+        display: none;
+      }
+
+      .brand-title {
+        font-size: 0.9rem;
+      }
+
+      /* スマホ画面下部に固定配置するボトムナビゲーションバー（親指で快適にタブ切替） */
+      .nav-tabs {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+        z-index: 1150;
+        background: var(--bg-glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--border-highlight);
+        border-radius: 20px;
+        padding: 6px 8px;
+        gap: 4px;
+        justify-content: flex-start;
+        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.50);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-tab,
+      .nav-tab.always-label,
+      .nav-tab.icon-only-tab {
+        flex: 1 0 auto;
+        min-width: 60px;
+        min-height: 48px;
+        padding: 6px 10px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+      }
+
+      .nav-tab.icon-only-tab .nav-tab-label,
+      .nav-tab.always-label .nav-tab-label {
+        max-width: none !important;
+        opacity: 1 !important;
+        margin-left: 0 !important;
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+
+      /* 右上コントローラーの整理（F11全画面ボタンはスマホでは非表示） */
+      .theme-controller {
+        padding: 4px 6px 4px 10px;
+        gap: 5px;
+      }
+
+      .nav-current-time {
+        font-size: 0.78rem;
+        padding-right: 2px;
+      }
+
+      #fullscreen-toggle-btn {
+        display: none !important;
+      }
+
+      .nav-action-btn.icon-only-btn,
+      .mini-menu-trigger {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        border-radius: 12px;
+      }
+
+      .mini-menu-bar-popover {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 64px);
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-width: calc(100vw - 24px);
+      }
+
+      /* 2. メインコンテナ＆全グリッドの完全1列（シングルカラム）化・はみ出し防止 */
+      .main-container {
+        margin: 8px auto 24px;
+        padding: 0 12px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .bento-grid,
+      .workspace-layout,
+      .calendar-layout,
+      .wl-layout,
+      .notif-grid-list,
+      .news-grid-list,
+      .lifespan-horizontal-layout {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .span-clock,
+      .span-weather,
+      .span-schedule,
+      .span-memo,
+      .span-pattern,
+      .span-notification,
+      .span-news,
+      .span-lifespan {
+        grid-column: 1 / -1 !important;
+        min-height: auto;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .bento-card,
+      .workspace-sidebar,
+      .workspace-editor-pane,
+      .calendar-main-card,
+      .calendar-side-card,
+      .wl-sidebar,
+      .wl-header,
+      .wl-hero {
+        padding: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      /* 時計カード最適化 */
+      .clock-main-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .clock-digits {
+        font-size: clamp(2.4rem, 12vw, 3.4rem);
+      }
+
+      .clock-right-meta {
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .spectrum-header {
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 0.68rem;
+      }
+
+      /* 天気カード最適化 */
+      .weather-map-trigger {
+        min-height: 40px;
+        padding: 0 13px;
+      }
+
+      .weather-map-menu {
+        right: 0;
+        max-width: calc(100vw - 40px);
+      }
+
+      .weather-map-option {
+        min-height: 44px;
+      }
+
+      /* ニュースカード最適化 */
+      .news-item-link {
+        padding: 10px;
+        gap: 12px;
+      }
+
+      .news-thumb-wrap {
+        width: 88px;
+        height: 72px;
+      }
+
+      .news-item-title {
+        font-size: 0.86rem;
+      }
+
+      /* 3. タッチ操作性の向上（最小高さ 44px 確保・十分な余白） */
+      .btn-primary,
+      .btn-secondary,
+      .btn-danger,
+      .wl-btn-secondary {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 0.85rem;
+      }
+
+      .subtle-data-btn,
+      .open-notes-link,
+      .wl-link-btn,
+      .notif-banner-btn,
+      .notif-bubble-btn,
+      .navbar-wrapper .nav-action-btn:not(.icon-only-btn),
+      #view-calendar .nav-action-btn,
+      #view-memo .nav-action-btn,
+      #view-notebook .nav-action-btn {
+        min-height: 44px;
+        padding: 8px 14px;
+      }
+
+      .cal-input,
+      .search-box-input,
+      .notif-custom-input,
+      .wl-sort-select,
+      .emoji-custom-input {
+        min-height: 44px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .icon-mini-btn {
+        min-width: 38px;
+        min-height: 38px;
+        padding: 6px;
+      }
+
+      .dash-schedule-item,
+      .list-card-item,
+      .wl-cat-item {
+        min-height: 48px;
+      }
+
+      /* メモ帳 & ノートブックのスマホ最適化 */
+      .workspace-layout {
+        min-height: auto;
+      }
+
+      .item-list-scroll {
+        max-height: 220px;
+      }
+
+      .editor-title-input {
+        min-width: 0;
+        width: 100%;
+        font-size: 1.25rem !important;
+      }
+
+      .editor-body-textarea,
+      .nb-rich-editor {
+        min-height: 300px;
+        padding: 14px;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .nb-toolbar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .nb-tool-btn {
+        min-height: 40px;
+        padding: 6px 10px;
+        flex-shrink: 0;
+      }
+
+      .nb-color-palette {
+        flex-shrink: 0;
+      }
+
+      .nb-color-swatch {
+        width: 24px;
+        height: 24px;
+      }
+
+      .nb-rich-editor table {
+        display: block;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+
+      /* カレンダーのスマホ最適化 */
+      .cal-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .cal-top-bar > div:last-child {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+
+      .cal-weekdays-grid {
+        gap: 3px;
+        font-size: 0.64rem;
+      }
+
+      .cal-days-grid {
+        gap: 4px;
+        grid-auto-rows: 72px;
+      }
+
+      .cal-day-cell {
+        height: 72px;
+        min-height: 72px;
+        max-height: 72px;
+        padding: 4px;
+        border-radius: 10px;
+      }
+
+      .cal-day-num {
+        font-size: 0.74rem;
+      }
+
+      .cal-holiday-badge {
+        font-size: 0.52rem;
+        padding: 1px 3px;
+      }
+
+      .cal-event-pill {
+        font-size: 0.58rem;
+        height: 16px;
+        padding: 1px 4px;
+      }
+
+      /* ウィッシュリストのスマホ最適化 */
+      .wl-header-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+      }
+
+      .wl-header-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+      }
+
+      .wl-header-actions button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .wl-item-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* モーダル・通知ドロワーのスマホ最適化 */
+      .notif-tall-popup {
+        top: calc(env(safe-area-inset-top, 0px) + 64px);
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: calc(100vw - 20px);
+        height: calc(100dvh - 165px);
+      }
+
+      .notif-bubble-popup {
+        top: calc(env(safe-area-inset-top, 0px) + 64px);
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: calc(100vw - 20px);
+      }
+
+      .modal-backdrop {
+        padding: 12px;
+        align-items: flex-end;
+      }
+
+      .modal-card,
+      .wl-modal-card {
+        max-height: calc(100dvh - 24px);
+        overflow-y: auto;
+        border-radius: 22px;
+        padding: 20px 16px;
+      }
+
+      .wl-modal-head,
+      .wl-modal-body,
+      .wl-modal-foot {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .subtle-data-bar {
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+      }
+
+      .auth-gate-overlay {
+        top: 0;
+        padding: 16px;
+      }
+
+      .auth-gate-card {
+        padding: 26px 20px 22px;
+      }
+    }
   </style>
 </head>
 <body>
+  <script>
+    // 2回目以降のアクセス時、保存済みセッションがあればパスワード画面を一瞬も出さずに即スキップする同期判定
+    (function () {
+      try {
+        var unlocked = localStorage.getItem('aether_auth_unlocked_v1') === '1';
+        var sbToken = localStorage.getItem('aether_supabase_auth_token');
+        if (!unlocked && !sbToken) {
+          document.body.classList.add('auth-locked');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- ========================================================================
+       SUPABASE PASSWORD AUTHENTICATION GATE (SECURITY OVERLAY)
+       ======================================================================== -->
+  <div id="auth-gate-overlay" class="auth-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-gate-title">
+    <div id="auth-gate-card" class="auth-gate-card">
+      <div class="auth-gate-icon-wrap">
+        <i data-lucide="shield-check" width="30" height="30"></i>
+      </div>
+      <div class="auth-gate-eyebrow">AETHER // SUPABASE SECURITY</div>
+      <h2 id="auth-gate-title" class="auth-gate-title">専用パスワード認証</h2>
+      <p class="auth-gate-desc">
+        ダッシュボード専用のパスワードを入力してください。<br />
+        一度ログインするとこの端末に記憶され、次回から自動でスキップされます。
+      </p>
+
+      <form class="auth-gate-form" onsubmit="handleAuthGateSubmit(event)">
+        <!-- パスワードマネージャー向けの固定メールアドレス（非表示） -->
+        <input type="email" id="auth-hidden-username" name="username" value="owner@aether-os.local" autocomplete="username" style="display:none;" readonly />
+
+        <div class="auth-input-group">
+          <span class="auth-input-leading">
+            <i data-lucide="key-round" width="18" height="18"></i>
+          </span>
+          <input
+            id="auth-gate-password"
+            type="password"
+            class="auth-gate-input"
+            placeholder="専用パスワードを入力 (6文字以上)..."
+            autocomplete="current-password"
+            required
+          />
+          <button
+            type="button"
+            class="auth-eye-btn"
+            onclick="toggleAuthPasswordVisibility()"
+            title="パスワードの表示/非表示"
+            aria-label="パスワードの表示/非表示"
+          >
+            <i id="auth-eye-icon" data-lucide="eye" width="18" height="18"></i>
+          </button>
+        </div>
+
+        <button id="auth-gate-submit-btn" type="submit" class="btn-primary auth-submit-btn">
+          <i data-lucide="unlock" width="17" height="17"></i>
+          <span id="auth-gate-submit-text">ロック解除してログイン</span>
+        </button>
+
+        <div id="auth-gate-feedback" class="auth-gate-feedback" role="alert"></div>
+
+        <div class="auth-remember-pill">
+          <i data-lucide="check-circle-2" width="15" height="15" style="color:var(--status-live);flex-shrink:0;"></i>
+          <span>ログイン状態を端末に自動記憶（次回から入力スキップ）</span>
+        </div>
+      </form>
+
+      <details class="auth-gate-details">
+        <summary>初回設定・認証メールアドレス確認</summary>
+        <div class="auth-gate-details-body">
+          <label for="auth-gate-email-input" style="font-weight:700;color:var(--text-secondary);">Supabase 認証用固定メールアドレス</label>
+          <input
+            id="auth-gate-email-input"
+            type="email"
+            class="cal-input"
+            value="owner@aether-os.local"
+            onchange="updateAuthFixedEmail(this.value)"
+          />
+          <div style="line-height:1.45;">
+            ※初回ログイン時は、入力したパスワード（6文字以上）が自動的に専用パスワードとしてSupabaseに登録されます。
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
 
   <!-- Frameless Window Rounded Border Overlay -->
   <div class="window-frame-border" aria-hidden="true"></div>
@@ -4722,9 +5531,9 @@
           </div>
         </div>
 
-        <!-- Mini Menu Icon Button (9 Rounded Squares, Hover opens 3x3 Square Grid) -->
-        <div class="mini-menu-anchor">
-          <button class="mini-menu-trigger" aria-label="Mini Menu" title="Mini Menu">
+        <!-- Mini Menu Icon Button (9 Rounded Squares, Hover or Tap opens 3x3 Square Grid) -->
+        <div class="mini-menu-anchor" id="mini-menu-anchor">
+          <button type="button" class="mini-menu-trigger" onclick="toggleMiniMenuPopover(event)" aria-label="Mini Menu" title="Mini Menu">
             <svg class="nine-dots-svg" viewBox="0 0 24 24" aria-hidden="true">
               <rect x="2" y="2" width="5" height="5" rx="1.5" />
               <rect x="9.5" y="2" width="5" height="5" rx="1.5" />
@@ -4797,6 +5606,10 @@
         <button id="tab-calendar" class="nav-tab icon-only-tab" onclick="switchView('calendar')" title="Calendar">
           <i data-lucide="calendar-days" width="16" height="16"></i>
           <span class="nav-tab-label">Calendar</span>
+        </button>
+        <button id="tab-wishlist" class="nav-tab icon-only-tab" onclick="switchView('wishlist')" title="Wishlist">
+          <i data-lucide="gift" width="16" height="16"></i>
+          <span class="nav-tab-label">Wishlist</span>
         </button>
         <button id="tab-budget" class="nav-tab icon-only-tab" onclick="switchView('budget')" title="Budget (家計簿)">
           <i data-lucide="wallet" width="16" height="16"></i>
@@ -5289,6 +6102,10 @@
         <button class="subtle-data-btn" onclick="triggerImportAppData()" title="保存したJSONファイルからデータを復元">
           <i data-lucide="upload" width="13" height="13"></i>
           <span>データを復元</span>
+        </button>
+        <button class="subtle-data-btn" onclick="lockDashboardSession()" title="ログアウトしてパスワードロック画面に戻す">
+          <i data-lucide="lock" width="13" height="13"></i>
+          <span>画面ロック</span>
         </button>
         <input id="import-json-input" type="file" accept=".json" style="display:none" onchange="handleImportAppData(event)" />
       </div>
@@ -6762,17 +7579,221 @@
     let pendingSupabaseSave = false;
     const clientDeviceId = 'dev_' + Math.random().toString(36).slice(2, 10);
 
+    /* --- 専用パスワード認証 & セッション自動記憶 (Supabase Auth + LocalStorage) --- */
+    const AUTH_FIXED_EMAIL_KEY = 'aether_auth_fixed_email_v1';
+    const AUTH_UNLOCKED_STORAGE_KEY = 'aether_auth_unlocked_v1';
+    const AUTH_PASSWORD_HASH_KEY = 'aether_auth_pwd_hash_v1';
+    const SUPABASE_AUTH_STORAGE_KEY = 'aether_supabase_auth_token';
+    let currentAuthFixedEmail = localStorage.getItem(AUTH_FIXED_EMAIL_KEY) || 'owner@aether-os.local';
+
     /**
-     * Supabase クライアントの初期化
+     * Supabase クライアントの初期化（セッションのlocalStorage永続化・自動トークン更新を有効化）
      */
     function initSupabaseClient() {
       if (supabaseClient) return supabaseClient;
       if (window.supabase && typeof window.supabase.createClient === 'function') {
         supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY, {
-          auth: { persistSession: false }
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false,
+            storageKey: SUPABASE_AUTH_STORAGE_KEY,
+            storage: window.localStorage
+          }
         });
       }
       return supabaseClient;
+    }
+
+    async function computeSha256Hex(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(String(text));
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function isDashboardAuthenticated() {
+      try {
+        if (localStorage.getItem(AUTH_UNLOCKED_STORAGE_KEY) === '1') return true;
+        const rawSbSession = localStorage.getItem(SUPABASE_AUTH_STORAGE_KEY);
+        if (rawSbSession && rawSbSession.includes('access_token')) {
+          localStorage.setItem(AUTH_UNLOCKED_STORAGE_KEY, '1');
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function updateAuthFixedEmail(newEmail) {
+      const cleaned = (newEmail || '').trim().toLowerCase() || 'owner@aether-os.local';
+      currentAuthFixedEmail = cleaned;
+      try {
+        localStorage.setItem(AUTH_FIXED_EMAIL_KEY, cleaned);
+      } catch (e) {}
+      const hiddenEl = document.getElementById('auth-hidden-username');
+      if (hiddenEl) hiddenEl.value = cleaned;
+    }
+
+    function toggleAuthPasswordVisibility() {
+      const input = document.getElementById('auth-gate-password');
+      const icon = document.getElementById('auth-eye-icon');
+      if (!input) return;
+      const isPwd = input.type === 'password';
+      input.type = isPwd ? 'text' : 'password';
+      if (icon) {
+        icon.setAttribute('data-lucide', isPwd ? 'eye-off' : 'eye');
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    function setAuthGateFeedback(message, type = 'error') {
+      const box = document.getElementById('auth-gate-feedback');
+      const card = document.getElementById('auth-gate-card');
+      if (!box) return;
+      if (!message) {
+        box.className = 'auth-gate-feedback';
+        box.textContent = '';
+        return;
+      }
+      box.className = 'auth-gate-feedback ' + type;
+      box.textContent = message;
+      if (type === 'error' && card) {
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+      }
+    }
+
+    async function fetchRemotePasswordHashFromSupabase() {
+      const client = initSupabaseClient();
+      if (!client) return null;
+      try {
+        const { data: rows, error } = await client
+          .from(SUPABASE_TABLE_NAME)
+          .select('id, content')
+          .eq('key', SUPABASE_SYNC_KEY)
+          .order('id', { ascending: false })
+          .limit(1);
+        if (!error && Array.isArray(rows) && rows.length > 0 && rows[0].content) {
+          const parsed = typeof rows[0].content === 'string'
+            ? JSON.parse(rows[0].content)
+            : rows[0].content;
+          return parsed?.authPasswordHash || null;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function completeAuthUnlockAndStartSync(passwordHashToPersist) {
+      try {
+        localStorage.setItem(AUTH_UNLOCKED_STORAGE_KEY, '1');
+        if (passwordHashToPersist) {
+          localStorage.setItem(AUTH_PASSWORD_HASH_KEY, passwordHashToPersist);
+        }
+      } catch (e) {}
+
+      document.body.classList.remove('auth-locked');
+      setAuthGateFeedback('', '');
+      const pwdInput = document.getElementById('auth-gate-password');
+      if (pwdInput) pwdInput.value = '';
+
+      await startAuthenticatedDataSync();
+      showToast('🔓 ロック解除完了', 'ログイン状態を記憶しました。次回から自動でスキップされます。', 'shield-check');
+    }
+
+    /**
+     * 専用パスワードによるSupabase認証（固定メールアドレス + 入力されたパスワード）
+     */
+    async function handleAuthGateSubmit(event) {
+      if (event) event.preventDefault();
+      const pwdInput = document.getElementById('auth-gate-password');
+      const submitBtn = document.getElementById('auth-gate-submit-btn');
+      const submitText = document.getElementById('auth-gate-submit-text');
+      const emailInput = document.getElementById('auth-gate-email-input');
+
+      if (emailInput && emailInput.value) {
+        updateAuthFixedEmail(emailInput.value);
+      }
+
+      const password = pwdInput ? pwdInput.value : '';
+      if (!password || password.length < 6) {
+        setAuthGateFeedback('パスワードは6文字以上で入力してください。', 'error');
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.textContent = 'Supabaseで認証中...';
+      setAuthGateFeedback('', '');
+
+      try {
+        const client = initSupabaseClient();
+        const inputHash = await computeSha256Hex(password);
+
+        // 1. すでに登録済みの専用パスワードハッシュ（Supabase クラウドまたは端末）があるか確認
+        const remoteHash = await fetchRemotePasswordHashFromSupabase();
+        const localHash = localStorage.getItem(AUTH_PASSWORD_HASH_KEY);
+        const knownHash = remoteHash || localHash;
+
+        if (knownHash) {
+          // 既にパスワードが設定されている場合は完全一致を検証
+          if (inputHash === knownHash) {
+            // 背景で Supabase Auth サインインも試行
+            if (client) {
+              try {
+                await client.auth.signInWithPassword({
+                  email: currentAuthFixedEmail,
+                  password: password
+                });
+              } catch (e) {}
+            }
+            await completeAuthUnlockAndStartSync(inputHash);
+            return;
+          } else {
+            setAuthGateFeedback('パスワードが正しくありません。もう一度ご確認ください。', 'error');
+            return;
+          }
+        }
+
+        // 2. パスワード未設定（初回利用時）：入力されたパスワードを専用パスワードとして登録＆即時ロック解除
+        if (client) {
+          try {
+            await client.auth.signUp({
+              email: currentAuthFixedEmail,
+              password: password
+            });
+          } catch (e) {}
+        }
+
+        // クラウド側(dashboard_data)にも即時反映してPC・スマホ間でパスワードを共有
+        await completeAuthUnlockAndStartSync(inputHash);
+        return;
+      } catch (err) {
+        console.warn('handleAuthGateSubmit error:', err);
+        setAuthGateFeedback('認証処理中にエラーが発生しました。通信状態をご確認ください。', 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.textContent = 'ロック解除してログイン';
+      }
+    }
+
+    /**
+     * 手動でログアウト（画面ロック）してパスワード入力画面に戻す
+     */
+    async function lockDashboardSession() {
+      try {
+        localStorage.removeItem(AUTH_UNLOCKED_STORAGE_KEY);
+        localStorage.removeItem(SUPABASE_AUTH_STORAGE_KEY);
+        const client = initSupabaseClient();
+        if (client) {
+          await client.auth.signOut();
+        }
+      } catch (e) {}
+      document.body.classList.add('auth-locked');
+      setTimeout(() => {
+        document.getElementById('auth-gate-password')?.focus();
+      }, 80);
+      showToast('🔒 画面をロックしました', '再度アクセスするには専用パスワードを入力してください。', 'lock');
     }
 
     function updateSupabaseStatusUI(statusText, isError = false) {
@@ -6864,7 +7885,8 @@
         wishlistData: cloudWishlist,
         weatherLocation: typeof currentWeatherLocationValue === 'string' ? currentWeatherLocationValue : '35.8365,139.7495,川口市安行原',
         lightMode: document.body.classList.contains('light-mode'),
-        desktopNotifEnabled: Boolean(desktopNotifEnabled)
+        desktopNotifEnabled: Boolean(desktopNotifEnabled),
+        authPasswordHash: localStorage.getItem(AUTH_PASSWORD_HASH_KEY) || undefined
       };
     }
 
@@ -6886,6 +7908,11 @@
       try {
         if (data.updatedAt) {
           lastSyncedUpdatedAt = data.updatedAt;
+        }
+        if (typeof data.authPasswordHash === 'string' && data.authPasswordHash) {
+          try {
+            localStorage.setItem(AUTH_PASSWORD_HASH_KEY, data.authPasswordHash);
+          } catch (e) {}
         }
 
         // 1. ライトモード / ダークモード設定の反映
@@ -6973,11 +8000,15 @@
       }
     }
 
+    let hasCompletedInitialCloudLoad = false;
+
     /**
      * Supabase (dashboard_data テーブル) へ現在の全ダッシュボードデータを自動保存する
      */
-    async function saveAppStateToSupabase() {
+    async function saveAppStateToSupabase(allowInitialBootstrap = false) {
       if (isApplyingRemoteSupabaseState) return false;
+      if (!isDashboardAuthenticated()) return false;
+      if (!hasCompletedInitialCloudLoad && !allowInitialBootstrap) return false;
       const client = initSupabaseClient();
       if (!client) {
         updateSupabaseStatusUI('SDK未読込', true);
@@ -7065,6 +8096,22 @@
       }
     }
 
+    let hasStartedAuthDataSync = false;
+
+    async function startAuthenticatedDataSync() {
+      if (hasStartedAuthDataSync) {
+        await loadAppStateFromSupabase(false);
+        return;
+      }
+      hasStartedAuthDataSync = true;
+      try {
+        await loadAppStateFromSupabase(false);
+        subscribeSupabaseRealtimeSync();
+      } catch (err) {
+        console.warn('Initial Supabase sync failed:', err);
+      }
+    }
+
     /**
      * アプリ起動時（または手動同期時）に Supabase から最新データを取得して画面に反映する
      */
@@ -7094,6 +8141,13 @@
             : rows[0].content;
 
           await applyCloudPayloadToApp(remoteContent, false);
+          hasCompletedInitialCloudLoad = true;
+
+          // 初回ログインで設定されたパスワードハッシュがまだクラウドに無ければ同期保存
+          const localPwdHash = localStorage.getItem(AUTH_PASSWORD_HASH_KEY);
+          if (localPwdHash && !remoteContent.authPasswordHash) {
+            await saveAppStateToSupabase(true);
+          }
 
           // Tauri PC環境ではクラウドから取得した最新データをPC専用フォルダにも同期保存
           if (isTauriDesktopEnv()) {
@@ -7107,7 +8161,8 @@
           return true;
         } else {
           // Supabase上にまだデータが存在しない場合は、現在の初期データをクラウドへ初回保存する
-          const saved = await saveAppStateToSupabase();
+          hasCompletedInitialCloudLoad = true;
+          const saved = await saveAppStateToSupabase(true);
           if (saved && showNotification) {
             showToast('☁️ クラウドへ初回保存完了', '現在のダッシュボードデータをSupabaseに保存しました。', 'cloud');
           }
@@ -7461,7 +8516,31 @@
       }, { passive: false });
     }
 
+    function toggleMiniMenuPopover(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const popover = document.querySelector('#mini-menu-anchor .mini-menu-bar-popover');
+      if (popover) {
+        popover.classList.toggle('open');
+      }
+    }
+
+    function closeMiniMenuPopover() {
+      const popover = document.querySelector('#mini-menu-anchor .mini-menu-bar-popover');
+      if (popover) popover.classList.remove('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      const anchor = document.getElementById('mini-menu-anchor');
+      if (anchor && !anchor.contains(e.target)) {
+        closeMiniMenuPopover();
+      }
+    });
+
     function switchView(targetView) {
+      closeMiniMenuPopover();
       ALL_VIEWS.forEach((v) => {
         const sec = document.getElementById(`view-${v}`);
         const tab = document.getElementById(`tab-${v}`);
@@ -11148,19 +12227,42 @@
       evaluateNotifications();
       setInterval(evaluateNotifications, 60000);
 
+      // 認証用固定メールアドレス入力欄の初期同期
+      const authEmailInput = document.getElementById('auth-gate-email-input');
+      if (authEmailInput) authEmailInput.value = currentAuthFixedEmail;
+      const authHiddenUser = document.getElementById('auth-hidden-username');
+      if (authHiddenUser) authHiddenUser.value = currentAuthFixedEmail;
+
       // 1. Tauri PC環境の場合はPC内専用フォルダからキャッシュを高速復元し、
-      // 2. 続けて Supabase クラウドデータベースから最新データを取得して画面に反映＆リアルタイム同期を開始
+      // 2. ログイン状態を確認：既にログイン済みならパスワード画面を自動スキップしてSupabase同期を開始
       (async () => {
         try {
           await loadAllAppStateFromFileSystem();
         } catch (err) {
           console.warn('Initial FS load skipped or failed:', err);
         }
-        try {
-          await loadAppStateFromSupabase(false);
-          subscribeSupabaseRealtimeSync();
-        } catch (err) {
-          console.warn('Initial Supabase sync failed:', err);
+
+        const client = initSupabaseClient();
+        let hasActiveSession = isDashboardAuthenticated();
+
+        if (!hasActiveSession && client) {
+          try {
+            const { data } = await client.auth.getSession();
+            if (data?.session) {
+              localStorage.setItem(AUTH_UNLOCKED_STORAGE_KEY, '1');
+              hasActiveSession = true;
+            }
+          } catch (e) {}
+        }
+
+        if (hasActiveSession) {
+          document.body.classList.remove('auth-locked');
+          await startAuthenticatedDataSync();
+        } else {
+          document.body.classList.add('auth-locked');
+          setTimeout(() => {
+            document.getElementById('auth-gate-password')?.focus();
+          }, 100);
         }
       })();
 
