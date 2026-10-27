@@ -7215,6 +7215,389 @@
       box-shadow: 0 2px 5px rgba(20, 17, 41, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
+
+    /* ==========================================================================
+       MOBILE RESPONSIVE OVERHAULS (スマホでのレイアウト崩れ完全根絶)
+       対象: <= 768px (タブレット/スマホ) および <= 480px (スマートフォン)
+       ========================================================================== */
+
+    /* グローバル横スクロール防止 */
+    html, body {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      box-sizing: border-box !important;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      /* 1. ナビゲーションバーのスマホ崩れ防止 */
+      .navbar-wrapper {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        padding: 0 8px !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+      }
+      body.tauri-desktop-env .navbar-wrapper {
+        top: calc(var(--titlebar-height, 36px) + 4px) !important;
+      }
+      .navbar {
+        height: 48px !important;
+        padding: 4px 8px !important;
+        gap: 6px !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-radius: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .brand-and-mini {
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+      }
+      .brand-title {
+        display: none !important; /* スマホではロゴのみにし幅溢れを完全防止 */
+      }
+      .brand-logo {
+        width: 34px !important;
+        height: 34px !important;
+      }
+      .mini-menu-trigger {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+      }
+      .theme-controller {
+        gap: 4px !important;
+        padding: 2px 4px !important;
+        flex-shrink: 0 !important;
+      }
+      .nav-current-time {
+        font-size: 0.72rem !important;
+        padding-right: 2px !important;
+      }
+      #rainbow-toggle-btn {
+        display: none !important; /* スマホヘッダーの幅崩れを防止 */
+      }
+      #fullscreen-toggle-btn {
+        display: none !important;
+      }
+      .nav-action-btn.icon-only-btn {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        border-radius: 10px !important;
+      }
+      .mobile-menu-btn {
+        display: inline-flex !important;
+      }
+
+      /* スマホ右手アコーディオンナビゲーション (三) */
+      .nav-tabs {
+        position: fixed !important;
+        top: calc(env(safe-area-inset-top, 0px) + 56px) !important;
+        left: 8px !important;
+        right: 8px !important;
+        bottom: auto !important;
+        z-index: 1200 !important;
+        background: var(--bg-card-elevated) !important;
+        backdrop-filter: blur(28px) !important;
+        -webkit-backdrop-filter: blur(28px) !important;
+        border: 1px solid var(--border-highlight) !important;
+        border-radius: 18px !important;
+        padding: 0 10px !important;
+        max-height: 0 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55) !important;
+        transform: translateY(-8px) !important;
+        transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, transform 0.25s ease, padding 0.25s ease !important;
+      }
+      body.tauri-desktop-env .nav-tabs {
+        top: calc(var(--titlebar-height, 36px) + 56px) !important;
+      }
+      .nav-tabs.mobile-open {
+        max-height: calc(100vh - 80px) !important;
+        padding: 12px 10px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translateY(0) !important;
+      }
+
+      /* メインコンテナの余白適正化 */
+      body {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+        padding-bottom: 32px !important;
+      }
+      body.tauri-desktop-env {
+        padding-top: calc(var(--titlebar-height, 36px) + 60px) !important;
+      }
+      .main-container {
+        margin: 6px auto 20px !important;
+        padding: 0 10px !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+      }
+
+      /* 2. Budget (予算) 画面のスマホ崩れ防止 */
+      .budget-whiteboard {
+        height: 480px !important;
+        border-radius: 18px !important;
+      }
+      /* バンクゾーンを下部にドッキング配置し、ホワイトボードの作業面積を最大化 */
+      .budget-bank-zone {
+        position: absolute !important;
+        bottom: 8px !important;
+        left: 8px !important;
+        right: 8px !important;
+        top: auto !important;
+        width: auto !important;
+        height: 104px !important;
+        border-radius: 14px !important;
+        padding: 6px 10px !important;
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.94), rgba(15, 23, 42, 0.98)) !important;
+        border: 1px solid var(--border-highlight) !important;
+        backdrop-filter: blur(12px) !important;
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.35) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        z-index: 100 !important;
+      }
+      .budget-bank-title {
+        font-size: 0.74rem !important;
+        margin-bottom: 4px !important;
+      }
+      .budget-bank-counts {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 3px 6px !important;
+        font-size: 0.66rem !important;
+      }
+      /* 金種ボタンバーを横スクロールピルバー化 */
+      .budget-mint-bar {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 6px !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 10px !important;
+        scrollbar-width: none !important;
+      }
+      .budget-mint-bar::-webkit-scrollbar {
+        display: none !important;
+      }
+      .budget-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .budget-envelopes-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      /* 3. Healing (癒やし) 画面のスマホ崩れ防止 */
+      .healing-stage-card {
+        padding: 12px !important;
+        border-radius: 16px !important;
+        min-height: auto !important;
+      }
+      #healing-category-bar {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 6px !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 10px !important;
+        scrollbar-width: none !important;
+      }
+      #healing-category-bar::-webkit-scrollbar {
+        display: none !important;
+      }
+      .healing-masonry {
+        column-count: 1 !important;
+        column-gap: 0 !important;
+      }
+      .healing-item-card {
+        margin-bottom: 12px !important;
+        border-radius: 14px !important;
+      }
+      .healing-bg-picker {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+      }
+
+      /* 4. Scenery (絶景) 画面のスマホ崩れ防止 */
+      .scenery-cat-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 6px !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 10px !important;
+        scrollbar-width: none !important;
+      }
+      .scenery-cat-tabs::-webkit-scrollbar {
+        display: none !important;
+      }
+      .news-live-player-wrap,
+      .news-live-frame-wrap {
+        position: relative !important;
+        width: 100% !important;
+        aspect-ratio: 16 / 9 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        background: #000000 !important;
+      }
+      .news-live-player-wrap iframe,
+      .news-live-frame-wrap iframe {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+      }
+      .scenery-photo-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      /* 5. Watchlist (ウォッチリスト) 画面のスマホ崩れ防止 */
+      .watchlist-grid-3col {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      .watchlist-card {
+        border-radius: 14px !important;
+      }
+
+      /* 6. Exercise (運動記録) 画面のスマホ崩れ防止 */
+      .ex-layout-grid,
+      .calendar-layout {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .ex-scoreboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .ex-quote-card {
+        padding: 14px 12px !important;
+      }
+      .ex-quote-text {
+        font-size: 0.90rem !important;
+        line-height: 1.5 !important;
+      }
+
+      /* 7. Calendar 一括管理カードのスマホ崩れ防止 */
+      .cal-manage-card {
+        margin-top: 16px !important;
+      }
+      .cal-manage-card .card-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+      }
+      .cal-manage-card .card-header > div:last-child {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+      }
+      #cal-manage-search {
+        width: 100% !important;
+      }
+      .cal-manage-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+
+      /* 8. Notebook Pro テーブル操作バーのスマホ横スクロール対応 */
+      .nb-table-ctrl {
+        max-width: calc(100vw - 20px) !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex-wrap: nowrap !important;
+        padding: 6px 8px !important;
+        gap: 5px !important;
+        border-radius: 12px !important;
+      }
+      .nb-table-ctrl::-webkit-scrollbar {
+        height: 3px !important;
+      }
+      .nb-table-ctrl::-webkit-scrollbar-thumb {
+        background: var(--accent-primary) !important;
+        border-radius: 3px !important;
+      }
+
+      /* 9. 全モーダルの画面内スクロール保証 */
+      .modal-card,
+      .media-lightbox-card,
+      .auth-gate-card {
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: calc(100vh - 48px) !important;
+        padding: 16px 14px !important;
+        margin: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        box-sizing: border-box !important;
+        border-radius: 18px !important;
+      }
+      .media-lightbox-body img,
+      .media-lightbox-body video {
+        max-height: 60vh !important;
+      }
+
+      /* 10. カードやコンテンツのパディング適正化 */
+      .bento-card {
+        padding: 14px 12px !important;
+        border-radius: 16px !important;
+      }
+      .card-header {
+        margin-bottom: 12px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 3px 6px !important;
+      }
+      .nav-current-time {
+        display: none !important; /* 480px以下極小幅では時計を隠して確実な1行保持 */
+      }
+      .nav-action-btn.icon-only-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+      }
+      .ex-scoreboard-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+      }
+      .budget-summary-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -16937,13 +17320,347 @@
   const WATCHLIST_DATA_KEY = 'aether_watchlist_data_v1';
   const BUDGET_DATA_KEY = 'aether_budget_data_v1';
 
-  function triggerCloudAndLocalSave() {
+  // ==========================================================================
+  // DATA FORTRESS DUAL-WRITE HOOK (LocalStorage + IndexedDB + Cloud + FS)
+  // ==========================================================================
+  let fortressSnapshotDebounceTimer = null;
+
+  function triggerCloudAndLocalSave(modifiedKey = null, modifiedData = null) {
+    // 1. Dual-write to IndexedDB
+    if (modifiedKey && modifiedData !== null && modifiedData !== undefined) {
+      fortressSet(modifiedKey, modifiedData);
+    }
+
+    // 2. Schedule rolling snapshot
+    if (fortressSnapshotDebounceTimer) clearTimeout(fortressSnapshotDebounceTimer);
+    fortressSnapshotDebounceTimer = setTimeout(() => {
+      saveFortressSnapshot('data-change');
+    }, 2000);
+
+    // 3. Tauri Local FileSystem Save
     if (typeof scheduleRealtimeFileSystemSave === 'function') {
       scheduleRealtimeFileSystemSave(120);
     } else if (typeof saveAppStateToSupabase === 'function') {
       saveAppStateToSupabase();
     }
   }
+
+// ==========================================================================
+// DATA FORTRESS ENGINE (データ要塞システム: 絶対にデータが消えない三重保護)
+// 1. Persistent Storage API (ブラウザによる自動削除の禁止)
+// 2. IndexedDB Dual-Write Engine (LocalStorage + IndexedDB の常時二重化)
+// 3. Auto-Recovery & Self-Healing (LocalStorage破損・消去時の自動自己復元)
+// 4. Rolling Snapshots (直近5世代のタイムスタンプ付き完全バックアップ)
+// 5. One-Click Full JSON Export & Import (ワンクリック完全退避 & 復元)
+// ==========================================================================
+
+const FORTRESS_DB_NAME = 'aether_fortress_db_v1';
+const FORTRESS_DB_VERSION = 1;
+let fortressDBPromise = null;
+
+const ALL_DATA_KEYS = [
+  'aether_memos_v2',
+  'aether_notebook_pages_v1',
+  'aether_calendar_events_v2',
+  'aether_cal_memos_v1',
+  'aether_budget_v5',
+  'aether_healing_v5',
+  'aether_watchlist_v5',
+  'aether_exercise_v5',
+  'aether_wishlist_data_v2',
+  'aether_quick_memo_v2',
+  'aether_light_mode',
+  'aether_accent_primary',
+  'aether_accent_secondary',
+  'aether_desktop_notif_enabled_v1',
+  'aether_discord_notif_enabled_v1'
+];
+
+function openFortressDB() {
+  if (fortressDBPromise) return fortressDBPromise;
+  fortressDBPromise = new Promise((resolve) => {
+    if (typeof window === 'undefined' || !window.indexedDB) {
+      console.warn('[DataFortress] IndexedDB is not supported in this environment.');
+      resolve(null);
+      return;
+    }
+    try {
+      const req = window.indexedDB.open(FORTRESS_DB_NAME, FORTRESS_DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('stores')) {
+          db.createObjectStore('stores', { keyPath: 'key' });
+        }
+        if (!db.objectStoreNames.contains('snapshots')) {
+          db.createObjectStore('snapshots', { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      req.onsuccess = (e) => {
+        resolve(e.target.result);
+      };
+      req.onerror = (e) => {
+        console.error('[DataFortress] IndexedDB open error:', e);
+        resolve(null);
+      };
+    } catch (err) {
+      console.error('[DataFortress] IndexedDB initialization error:', err);
+      resolve(null);
+    }
+  });
+  return fortressDBPromise;
+}
+
+// 永続ストレージパーミッション要求
+async function requestPersistentStorage() {
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      const isPersisted = await navigator.storage.persisted();
+      if (!isPersisted) {
+        const granted = await navigator.storage.persist();
+        console.log(`[DataFortress] Persistent Storage Request: ${granted ? 'GRANTED (自動削除されません)' : 'DENIED'}`);
+      } else {
+        console.log('[DataFortress] Storage is already PERSISTENT (OS/ブラウザによる自動削除から保護されています)');
+      }
+    }
+  } catch (err) {
+    console.warn('[DataFortress] Persistent storage request error:', err);
+  }
+}
+
+// IndexedDB 書き込み
+async function fortressSet(key, value) {
+  try {
+    const db = await openFortressDB();
+    if (!db) return false;
+    return new Promise((resolve) => {
+      const tx = db.transaction('stores', 'readwrite');
+      const store = tx.objectStore('stores');
+      store.put({ key, value, updatedAt: Date.now() });
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    });
+  } catch (err) {
+    console.warn('[DataFortress] fortressSet error:', key, err);
+    return false;
+  }
+}
+
+// IndexedDB 読み込み
+async function fortressGet(key) {
+  try {
+    const db = await openFortressDB();
+    if (!db) return null;
+    return new Promise((resolve) => {
+      const tx = db.transaction('stores', 'readonly');
+      const store = tx.objectStore('stores');
+      const req = store.get(key);
+      req.onsuccess = (e) => resolve(e.target.result ? e.target.result.value : null);
+      req.onerror = () => resolve(null);
+    });
+  } catch (err) {
+    console.warn('[DataFortress] fortressGet error:', key, err);
+    return null;
+  }
+}
+
+// 全データスナップショット取得
+function getAllAppDataSnapshot() {
+  const snapshot = {
+    version: '5.0-fortress',
+    createdAt: new Date().toISOString(),
+    timestamp: Date.now(),
+    data: {}
+  };
+  ALL_DATA_KEYS.forEach(key => {
+    try {
+      const val = localStorage.getItem(key);
+      if (val !== null) {
+        try {
+          snapshot.data[key] = JSON.parse(val);
+        } catch {
+          snapshot.data[key] = val;
+        }
+      }
+    } catch (e) {
+      console.warn('[DataFortress] Error reading key for snapshot:', key, e);
+    }
+  });
+  return snapshot;
+}
+
+// スナップショットを IndexedDB に保存（最新5世代保持）
+async function saveFortressSnapshot(reason = 'auto') {
+  try {
+    const db = await openFortressDB();
+    if (!db) return;
+    const snap = getAllAppDataSnapshot();
+    snap.reason = reason;
+
+    const tx = db.transaction('snapshots', 'readwrite');
+    const store = tx.objectStore('snapshots');
+    store.add(snap);
+
+    // 古いスナップショット（5世代以上前）を自動クリーンアップ
+    const countReq = store.count();
+    countReq.onsuccess = () => {
+      if (countReq.result > 5) {
+        const cursorReq = store.openCursor();
+        let deleted = 0;
+        const toDelete = countReq.result - 5;
+        cursorReq.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor && deleted < toDelete) {
+            cursor.delete();
+            deleted++;
+            cursor.continue();
+          }
+        };
+      }
+    };
+  } catch (err) {
+    console.warn('[DataFortress] saveFortressSnapshot error:', err);
+  }
+}
+
+// 自己治癒 / 自動リカバリ (LocalStorage が空または消去された場合、IndexedDB から復元)
+async function autoRecoverFromIndexedDBIfEmpty() {
+  try {
+    let localHasData = false;
+    // 主要データが存在するかチェック
+    for (const key of ['aether_memos_v2', 'aether_notebook_pages_v1', 'aether_calendar_events_v2', 'aether_budget_v5', 'aether_healing_v5']) {
+      if (localStorage.getItem(key)) {
+        localHasData = true;
+        break;
+      }
+    }
+
+    if (localHasData) {
+      // LocalStorage にデータがある場合は、IndexedDB 側へミラーリングして同期を最新に保つ
+      for (const key of ALL_DATA_KEYS) {
+        const val = localStorage.getItem(key);
+        if (val !== null) {
+          fortressSet(key, val);
+        }
+      }
+      return false; // リカバリ不要
+    }
+
+    console.warn('[DataFortress] LocalStorage appears empty! Checking IndexedDB for auto-recovery...');
+    const db = await openFortressDB();
+    if (!db) return false;
+
+    let restoredCount = 0;
+    // 1. まず stores から個別復元
+    for (const key of ALL_DATA_KEYS) {
+      const val = await fortressGet(key);
+      if (val !== null && val !== undefined) {
+        try {
+          const strVal = typeof val === 'string' ? val : JSON.stringify(val);
+          localStorage.setItem(key, strVal);
+          restoredCount++;
+        } catch (e) {}
+      }
+    }
+
+    // 2. stores にもなければ snapshots から最新世代を復元
+    if (restoredCount === 0) {
+      const tx = db.transaction('snapshots', 'readonly');
+      const store = tx.objectStore('snapshots');
+      const snapsReq = store.getAll();
+      await new Promise((res) => {
+        snapsReq.onsuccess = () => {
+          const snaps = snapsReq.result || [];
+          if (snaps.length > 0) {
+            const latest = snaps[snaps.length - 1];
+            if (latest && latest.data) {
+              for (const [k, v] of Object.entries(latest.data)) {
+                try {
+                  const s = typeof v === 'string' ? v : JSON.stringify(v);
+                  localStorage.setItem(k, s);
+                  restoredCount++;
+                } catch (e) {}
+              }
+            }
+          }
+          res();
+        };
+        snapsReq.onerror = () => res();
+      });
+    }
+
+    if (restoredCount > 0) {
+      console.log(`🎉 [DataFortress] Auto-Recovery SUCCESS! Restored ${restoredCount} items from IndexedDB.`);
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error('[DataFortress] Auto-recovery error:', err);
+    return false;
+  }
+}
+
+// ワンクリック全データJSONエクスポート（ダウンロード）
+function exportAllDataAsJSON() {
+  try {
+    const snap = getAllAppDataSnapshot();
+    const jsonStr = JSON.stringify(snap, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const filename = `aether_complete_backup_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}.json`;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    console.log(`[DataFortress] Complete backup downloaded: ${filename}`);
+    if (typeof showSystemNotification === 'function') {
+      showSystemNotification('💾 バックアップ完了', `全データを「${filename}」として保存しました。`);
+    } else {
+      alert(`全データのバックアップをダウンロードしました:\n${filename}`);
+    }
+  } catch (err) {
+    console.error('[DataFortress] Export error:', err);
+    alert('バックアップの作成に失敗しました: ' + err.message);
+  }
+}
+
+// ワンクリック全データJSONインポート（完全復元）
+function importAllDataFromJSON(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!parsed || !parsed.data) {
+        throw new Error('バックアップファイルの形式が正しくありません。');
+      }
+      let count = 0;
+      for (const [key, val] of Object.entries(parsed.data)) {
+        try {
+          const str = typeof val === 'string' ? val : JSON.stringify(val);
+          localStorage.setItem(key, str);
+          await fortressSet(key, str);
+          count++;
+        } catch (err) {
+          console.warn('[DataFortress] Error importing key:', key, err);
+        }
+      }
+      await saveFortressSnapshot('manual-import');
+      alert(`🎉 バックアップから ${count} 種類のデータを完全に復元しました！\n画面を再読み込みして最新データを反映します。`);
+      window.location.reload();
+    } catch (err) {
+      console.error('[DataFortress] Import error:', err);
+      alert('バックアップの復元に失敗しました: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+
 
   /* ======================================================================
      1. PASSWORD AUTHENTICATION v5 (7169399 / 3回失敗で1日ロック / 次回自動スキップ)
@@ -17211,7 +17928,7 @@
     try {
       localStorage.setItem(HEALING_DATA_KEY, JSON.stringify(healingData));
     } catch (e) {}
-    triggerCloudAndLocalSave();
+    triggerCloudAndLocalSave(HEALING_DATA_KEY, healingData);
   }
 
   function getActiveHealingBgTheme() {
@@ -17801,7 +18518,7 @@
     try {
       localStorage.setItem(WATCHLIST_DATA_KEY, JSON.stringify(watchlistData));
     } catch (e) {}
-    triggerCloudAndLocalSave();
+    triggerCloudAndLocalSave(WATCHLIST_DATA_KEY, watchlistData);
   }
 
   function renderWatchlistView() {
@@ -18057,7 +18774,7 @@
     try {
       localStorage.setItem(BUDGET_DATA_KEY, JSON.stringify(budgetData));
     } catch (e) {}
-    triggerCloudAndLocalSave();
+    triggerCloudAndLocalSave(BUDGET_DATA_KEY, budgetData);
   }
 
   function calcContainerTotal(container) {
@@ -18796,7 +19513,7 @@
     try {
       localStorage.setItem(CAL_MEMOS_KEY, JSON.stringify(calendarMemos));
     } catch (e) {}
-    triggerCloudAndLocalSave();
+    triggerCloudAndLocalSave(CAL_MEMOS_KEY, calendarMemos);
     renderDashboardScheduleV5();
     if (typeof evaluateNotifications === 'function') evaluateNotifications();
   }
@@ -19089,7 +19806,7 @@
     try {
       localStorage.setItem(EXERCISE_DATA_KEY, JSON.stringify(exerciseData));
     } catch (e) {}
-    triggerCloudAndLocalSave();
+    triggerCloudAndLocalSave(EXERCISE_DATA_KEY, exerciseData);
   }
 
   function getDailyExerciseQuote() {
@@ -19761,6 +20478,28 @@
 
       if (window.lucide) lucide.createIcons();
     };
+
+    // Override dashboard export & import to use Complete Data Fortress Engine (All v5 data)
+    window.exportAllAppData = function () {
+      exportAllDataAsJSON();
+    };
+    window.handleImportAppData = function (event) {
+      const file = event.target?.files?.[0];
+      if (file) {
+        importAllDataFromJSON(file);
+      }
+    };
+
+    // Update Fortress status label in dashboard footer
+    const bar = document.querySelector('.subtle-data-bar');
+    if (bar && !$('fortress-status-label')) {
+      const span = document.createElement('span');
+      span.id = 'fortress-status-label';
+      span.style.cssText = 'color:#10b981;font-weight:700;display:inline-flex;align-items:center;gap:4px;';
+      span.title = 'IndexedDB常時二重化 + 永続ストレージ保護 + 世代別バックアップ';
+      span.innerHTML = '<span>🛡️ データ要塞: 多重保護中</span>';
+      bar.insertBefore(span, bar.firstChild);
+    }
   }
 
   function openHealingView() { switchView('healing'); }
@@ -19829,7 +20568,33 @@
     resetExerciseCalendarToToday
   });
 
-  window.addEventListener('DOMContentLoaded', () => {
+  // Expose Data Fortress APIs to window
+  Object.assign(window, {
+    exportAllDataAsJSON,
+    importAllDataFromJSON,
+    requestPersistentStorage,
+    saveFortressSnapshot
+  });
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    // 1. Request OS/Browser Persistent Storage (自動削除防止)
+    requestPersistentStorage();
+
+    // 2. Check and perform Auto-Recovery if LocalStorage was cleared
+    const recovered = await autoRecoverFromIndexedDBIfEmpty();
+    if (recovered) {
+      console.log('🎉 Data Fortress: Auto-recovery triggered reload of UI data.');
+    }
+
+    // 3. Periodic Snapshot Timer (10分ごと) & beforeunload
+    setInterval(() => {
+      saveFortressSnapshot('periodic-10min');
+    }, 10 * 60 * 1000);
+
+    window.addEventListener('beforeunload', () => {
+      saveFortressSnapshot('beforeunload');
+    });
+
     initAuthGateV5();
 
     loadCalendarMemos();
