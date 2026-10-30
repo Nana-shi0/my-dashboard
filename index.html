@@ -7217,11 +7217,11 @@
 
 
     /* ==========================================================================
-       MOBILE RESPONSIVE OVERHAULS (スマホでのレイアウト崩れ完全根絶)
-       対象: <= 768px (タブレット/スマホ) および <= 480px (スマートフォン)
+       UNIVERSAL RESPONSIVE OVERHAULS (全画面幅・タブ狭幅・スマホでのレイアウト崩れ完全根絶)
+       対象: 全デスクトップ狭幅 (<= 1240px, <= 1060px, <= 900px) & タブレット/スマホ (<= 768px, <= 480px)
        ========================================================================== */
 
-    /* グローバル横スクロール防止 */
+    /* グローバル横スクロール防止 & Grid/Flex はみ出し完全ガード */
     html, body {
       max-width: 100vw !important;
       overflow-x: hidden !important;
@@ -7231,6 +7231,359 @@
       box-sizing: border-box !important;
     }
 
+    /* 1. ダッシュボード Bento Grid & 全カードの幅潰れ・横突き破り防止 (全画面幅共通) */
+    .bento-grid {
+      width: 100%;
+      max-width: 100%;
+    }
+    .bento-grid > *,
+    .bento-card,
+    .calendar-main-card,
+    .calendar-side-card,
+    .memo-sidebar-card,
+    .memo-editor-card,
+    .wl-form-card,
+    .wl-main-card,
+    .healing-stage-card {
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .span-exercise,
+    #dash-exercise-card {
+      grid-column: span 12;
+      min-width: 0 !important;
+    }
+
+    /* カードヘッダー・タイトルグループの長い文字による横溢れ防止 */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap !important;
+      min-width: 0 !important;
+    }
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1 1 200px !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .card-title-group > div:not(.card-icon) {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .card-label {
+      display: block !important;
+      white-space: normal !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+      line-height: 1.35 !important;
+    }
+
+    /* ダッシュボード Exercise Tracker カード専用レスポンシブ構造 */
+    .dash-ex-body-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.1fr) minmax(280px, 1.3fr);
+      gap: 14px;
+      align-items: center;
+      min-width: 0;
+    }
+    .dash-ex-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      min-width: 0;
+    }
+    .dash-ex-stats-row .budget-stat-box {
+      min-width: 0 !important;
+      padding: 10px 8px !important;
+    }
+    .dash-ex-stats-row .budget-stat-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+    .dash-ex-form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    /* Scenery / News スタック余白保証 & カレンダーヘッダー共通化 */
+    .news-view-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      min-width: 0;
+    }
+    .calendar-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* Healing カテゴリバー (#healing-cat-bar / .wl-category-bar) 共通整備 */
+    #healing-cat-bar,
+    #healing-category-bar,
+    .wl-category-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* Budget コントロール行の折り返し安全性向上 */
+    .budget-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      min-width: 0;
+    }
+    .budget-ctrl-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      flex: 1 1 300px;
+      min-width: 0;
+    }
+    .budget-ctrl-group .cal-input {
+      flex: 1 1 150px;
+      min-width: 120px;
+    }
+
+    /* Mini Menu 3x3 ポップオーバーはどの画面幅でもコンパクトな3x3パネルを維持 */
+    .mini-menu-bar-popover {
+      width: min(312px, calc(100vw - 20px)) !important;
+      max-width: min(312px, calc(100vw - 20px)) !important;
+    }
+
+    /* ==========================================================================
+       BREAKPOINT 1: <= 1200px (ノートPC・タブ幅を少し狭めた時)
+       ========================================================================== */
+    @media (max-width: 1200px) {
+      .navbar {
+        gap: 6px;
+        padding: 0 12px;
+      }
+      .nav-tab {
+        padding: 7px 10px;
+        font-size: 0.78rem;
+      }
+      /* ダッシュボードの3列カード(4+4+4)を2列(6+6)にして狭幅での窮屈さを解消 */
+      .span-clock { grid-column: span 6; }
+      .span-weather { grid-column: span 6; }
+      .span-Scratch { grid-column: span 12; }
+      .span-calc { grid-column: span 6; }
+      .span-links { grid-column: span 6; }
+      .span-notify { grid-column: span 6; }
+      .span-schedule { grid-column: span 6; }
+      .span-exercise,
+      #dash-exercise-card { grid-column: span 12; }
+      .span-lifespan { grid-column: span 12; }
+    }
+
+    /* ==========================================================================
+       BREAKPOINT 2: <= 1060px (ブラウザ幅を半分〜狭めにした時・タブレット横/縦)
+       ナビゲーションバーが2段に折り返して崩れるのを防ぎ、右上ハンバーガー(三)に統一
+       ========================================================================== */
+    @media (max-width: 1060px) {
+      .navbar-wrapper {
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        padding: 0 10px !important;
+        max-width: 100vw !important;
+      }
+      body.tauri-desktop-env .navbar-wrapper {
+        top: calc(var(--titlebar-height, 36px) + 6px) !important;
+      }
+      .navbar {
+        height: 52px !important;
+        padding: 4px 10px !important;
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-radius: 18px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .brand-and-mini {
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+      }
+      .theme-controller {
+        gap: 5px !important;
+        padding: 3px 6px !important;
+        flex-shrink: 0 !important;
+      }
+      #fullscreen-toggle-btn {
+        display: none !important;
+      }
+      .mobile-menu-btn {
+        display: inline-flex !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* 右上三本線アコーディオンメニュー */
+      .nav-tabs {
+        position: fixed !important;
+        top: calc(env(safe-area-inset-top, 0px) + 62px) !important;
+        left: 10px !important;
+        right: 10px !important;
+        bottom: auto !important;
+        width: auto !important;
+        order: unset !important;
+        z-index: 1200 !important;
+        background: var(--bg-card-elevated) !important;
+        backdrop-filter: blur(28px) !important;
+        -webkit-backdrop-filter: blur(28px) !important;
+        border: 1px solid var(--border-highlight) !important;
+        border-radius: 18px !important;
+        padding: 0 12px !important;
+        max-height: 0 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 8px !important;
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55) !important;
+        transform: translateY(-8px) !important;
+        transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, transform 0.25s ease, padding 0.25s ease !important;
+      }
+      body.tauri-desktop-env .nav-tabs {
+        top: calc(var(--titlebar-height, 36px) + 62px) !important;
+      }
+      .nav-tabs.mobile-open {
+        max-height: calc(100vh - 84px) !important;
+        padding: 12px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translateY(0) !important;
+      }
+      .nav-tab,
+      .nav-tab.icon-only-tab {
+        width: 100% !important;
+        height: 44px !important;
+        padding: 8px 12px !important;
+        border-radius: 12px !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+      }
+      .nav-tab.icon-only-tab .nav-tab-label {
+        display: inline !important;
+        font-size: 0.84rem !important;
+        font-weight: 700 !important;
+      }
+
+      /* Mini Menu ポップオーバーの位置・サイズ適正化 */
+      .mini-menu-bar-popover {
+        top: calc(env(safe-area-inset-top, 0px) + 62px) !important;
+        left: 10px !important;
+        right: auto !important;
+        width: min(312px, calc(100vw - 20px)) !important;
+        max-width: min(312px, calc(100vw - 20px)) !important;
+      }
+
+      body {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 68px) !important;
+      }
+      body.tauri-desktop-env {
+        padding-top: calc(var(--titlebar-height, 36px) + 68px) !important;
+      }
+
+      /* ダッシュボード Exercise カードを上下スタックに */
+      .dash-ex-body-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      /* 各コンテンツのグリッドを2列または1列に最適化 */
+      .watchlist-grid-3col {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+      }
+      .scenery-photo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+      }
+      .healing-masonry {
+        column-count: 2 !important;
+        column-gap: 14px !important;
+      }
+      .budget-summary-grid,
+      .ex-scoreboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+      }
+      .wl-header-stats {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .wl-stat {
+        min-width: 0 !important;
+      }
+    }
+
+    /* ==========================================================================
+       BREAKPOINT 3: <= 900px (タブレット縦・狭いウィンドウ幅)
+       ダッシュボード・カレンダー・メモ・Wishlistの2カラムをすべて1カラム全幅に統一
+       ========================================================================== */
+    @media (max-width: 900px) {
+      .bento-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      /* すべてのBento Grid直下カードを確実に第1列全幅に統一（暗黙の12列生成バグを完全防止） */
+      .bento-grid > *,
+      .span-clock,
+      .span-weather,
+      .span-Scratch,
+      .span-calc,
+      .span-links,
+      .span-notify,
+      .span-schedule,
+      .span-exercise,
+      #dash-exercise-card,
+      .span-lifespan {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .calendar-layout,
+      .ex-layout-grid,
+      .memo-layout,
+      .wl-layout {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .wl-form-card {
+        position: static !important;
+      }
+    }
+
+    /* ==========================================================================
+       BREAKPOINT 4: <= 768px (スマートフォン・小型タブレット)
+       ========================================================================== */
     @media (max-width: 768px) {
       /* 1. ナビゲーションバーのスマホ崩れ防止 */
       .navbar-wrapper {
@@ -7336,6 +7689,15 @@
         transform: translateY(0) !important;
       }
 
+      /* Mini Menu ポップオーバーのスマホサイズ固定（巨大化防止） */
+      .mini-menu-bar-popover {
+        top: calc(env(safe-area-inset-top, 0px) + 56px) !important;
+        left: 8px !important;
+        right: auto !important;
+        width: min(308px, calc(100vw - 16px)) !important;
+        max-width: min(308px, calc(100vw - 16px)) !important;
+      }
+
       /* メインコンテナの余白適正化 */
       body {
         padding-top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
@@ -7352,9 +7714,41 @@
         box-sizing: border-box !important;
       }
 
+      /* ダッシュボード各カードの内部パーツ最適化 */
+      .weather-hero {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+      }
+      .weather-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .links-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .dash-schedule-item {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+      .dash-schedule-left {
+        min-width: 0 !important;
+        flex: 1 1 180px !important;
+      }
+      .subtle-data-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        text-align: center !important;
+        gap: 8px !important;
+      }
+      .subtle-data-actions {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+      }
+
       /* 2. Budget (予算) 画面のスマホ崩れ防止 */
       .budget-whiteboard {
-        height: 480px !important;
+        height: 500px !important;
         border-radius: 18px !important;
       }
       /* バンクゾーンを下部にドッキング配置し、ホワイトボードの作業面積を最大化 */
@@ -7365,9 +7759,10 @@
         right: 8px !important;
         top: auto !important;
         width: auto !important;
-        height: 104px !important;
+        height: auto !important;
+        min-height: 92px !important;
         border-radius: 14px !important;
-        padding: 6px 10px !important;
+        padding: 8px 10px !important;
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.94), rgba(15, 23, 42, 0.98)) !important;
         border: 1px solid var(--border-highlight) !important;
         backdrop-filter: blur(12px) !important;
@@ -7376,6 +7771,10 @@
         flex-direction: column !important;
         justify-content: center !important;
         z-index: 100 !important;
+      }
+      body.light-mode .budget-bank-zone {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.98)) !important;
+        box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.12) !important;
       }
       .budget-bank-title {
         font-size: 0.74rem !important;
@@ -7387,7 +7786,8 @@
         gap: 3px 6px !important;
         font-size: 0.66rem !important;
       }
-      /* 金種ボタンバーを横スクロールピルバー化 */
+      /* 金種ボタンバーを横スクロールピルバー化 (.budget-quick-mint & .budget-mint-bar 両対応) */
+      .budget-quick-mint,
       .budget-mint-bar {
         display: flex !important;
         flex-wrap: nowrap !important;
@@ -7398,8 +7798,16 @@
         margin-bottom: 10px !important;
         scrollbar-width: none !important;
       }
+      .budget-quick-mint::-webkit-scrollbar,
       .budget-mint-bar::-webkit-scrollbar {
         display: none !important;
+      }
+      .budget-quick-mint > span:last-child {
+        display: none !important; /* スマホでは長文ヒントを隠してボタンを見やすく */
+      }
+      .budget-mint-btn {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
       }
       .budget-summary-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -7416,6 +7824,7 @@
         border-radius: 16px !important;
         min-height: auto !important;
       }
+      #healing-cat-bar,
       #healing-category-bar {
         display: flex !important;
         flex-wrap: nowrap !important;
@@ -7426,8 +7835,13 @@
         margin-bottom: 10px !important;
         scrollbar-width: none !important;
       }
+      #healing-cat-bar::-webkit-scrollbar,
       #healing-category-bar::-webkit-scrollbar {
         display: none !important;
+      }
+      #healing-cat-bar > *,
+      #healing-category-bar > * {
+        flex-shrink: 0 !important;
       }
       .healing-masonry {
         column-count: 1 !important;
@@ -7456,6 +7870,9 @@
       .scenery-cat-tabs::-webkit-scrollbar {
         display: none !important;
       }
+      .scenery-cat-tabs > * {
+        flex-shrink: 0 !important;
+      }
       .news-live-player-wrap,
       .news-live-frame-wrap {
         position: relative !important;
@@ -7478,7 +7895,7 @@
         gap: 12px !important;
       }
 
-      /* 5. Watchlist (ウォッチリスト) 画面のスマホ崩れ防止 */
+      /* 5. Watchlist (ウォッチリスト) & Wishlist 画面のスマホ崩れ防止 */
       .watchlist-grid-3col {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
@@ -7486,8 +7903,25 @@
       .watchlist-card {
         border-radius: 14px !important;
       }
+      .wl-header-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+      .wl-items-grid {
+        grid-template-columns: 1fr !important;
+      }
 
       /* 6. Exercise (運動記録) 画面のスマホ崩れ防止 */
+      .ex-quote-banner {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 14px 12px !important;
+      }
+      .ex-quote-banner > button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
       .ex-layout-grid,
       .calendar-layout {
         grid-template-columns: 1fr !important;
@@ -7546,7 +7980,7 @@
         border-radius: 3px !important;
       }
 
-      /* 9. 全モーダルの画面内スクロール保証 */
+      /* 9. 全モーダル・通知ポップアップの画面内スクロール保証 */
       .modal-card,
       .media-lightbox-card,
       .auth-gate-card {
@@ -7566,7 +8000,13 @@
       }
 
       /* 10. カードやコンテンツのパディング適正化 */
-      .bento-card {
+      .bento-card,
+      .calendar-main-card,
+      .calendar-side-card,
+      .memo-sidebar-card,
+      .memo-editor-card,
+      .wl-form-card,
+      .wl-main-card {
         padding: 14px 12px !important;
         border-radius: 16px !important;
       }
@@ -7575,6 +8015,9 @@
       }
     }
 
+    /* ==========================================================================
+       BREAKPOINT 5: <= 480px (スマートフォン縦持ち・小型端末)
+       ========================================================================== */
     @media (max-width: 480px) {
       .navbar {
         padding: 3px 6px !important;
@@ -7588,6 +8031,30 @@
         min-width: 32px !important;
         min-height: 32px !important;
       }
+      /* ダッシュボード Exercise 統計・入力フォームのスマホ最適化 */
+      .dash-ex-stats-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+      }
+      .dash-ex-stats-row .budget-stat-box {
+        padding: 8px 4px !important;
+      }
+      .dash-ex-stats-row .budget-stat-label {
+        font-size: 0.62rem !important;
+      }
+      .dash-ex-stats-row .budget-stat-val {
+        font-size: 0.92rem !important;
+      }
+      .dash-ex-form-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .dash-ex-form-row .cal-input,
+      .dash-ex-form-row .dash-ex-submit-btn {
+        width: 100% !important;
+        flex: none !important;
+        justify-content: center !important;
+      }
       .ex-scoreboard-grid {
         grid-template-columns: 1fr 1fr !important;
         gap: 6px !important;
@@ -7596,6 +8063,487 @@
         grid-template-columns: 1fr 1fr !important;
         gap: 6px !important;
       }
+      .budget-ctrl-group {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .budget-ctrl-group .cal-input,
+      .budget-ctrl-group button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      /* スマホでのホワイトボード上の紙幣・封筒・貯金箱をコンパクト化して操作しやすく */
+      .budget-money-el.budget-bill {
+        width: 118px !important;
+        height: 62px !important;
+        padding: 4px 6px !important;
+      }
+      .budget-container-el.type-envelope,
+      .budget-container-el.type-piggy {
+        width: 185px !important;
+        min-height: 132px !important;
+        padding: 20px 10px 8px !important;
+      }
+      .links-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+
+    /* ==========================================================================
+       REAL JAPANESE YEN (BILLS & COINS) & AUTHENTIC ENVELOPE / PIGGY BANK STYLES
+       本物の日本円紙幣・硬貨の精巧な質感 & 本物の封筒・ブタ貯金箱デザイン
+       ========================================================================== */
+
+    /* ----------------------------------------------------
+       1. REALISTIC JAPANESE YEN BILLS (壱万円・五千円・千円)
+       ---------------------------------------------------- */
+    .budget-money-el.budget-bill {
+      position: absolute;
+      width: 140px;
+      height: 72px;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      z-index: 20;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.15s ease, filter 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+    }
+    .budget-money-el.budget-bill:active {
+      cursor: grabbing;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--accent-primary);
+      z-index: 100;
+    }
+    .budget-money-el.budget-bill::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px dashed rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    /* 壱万円札 (リアルゴールドベージュ・日本銀行券・透かしオーバル・朱印) */
+    .budget-bill.denom-10000 {
+      background:
+        radial-gradient(circle at 75% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 65%),
+        repeating-linear-gradient(45deg, rgba(180, 140, 70, 0.06) 0px, rgba(180, 140, 70, 0.06) 2px, transparent 2px, transparent 6px),
+        linear-gradient(135deg, #f9f5e8 0%, #f1e4c3 40%, #e2cb9c 100%);
+      color: #3e2e14;
+      border-color: #c4a76c;
+    }
+    /* 五千円札 (リアル紫紺パープル・日本銀行券・透かしオーバル・朱印) */
+    .budget-bill.denom-5000 {
+      background:
+        radial-gradient(circle at 75% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 65%),
+        repeating-linear-gradient(45deg, rgba(140, 90, 180, 0.06) 0px, rgba(140, 90, 180, 0.06) 2px, transparent 2px, transparent 6px),
+        linear-gradient(135deg, #f8f1fb 0%, #ecdcf5 40%, #d8bbeb 100%);
+      color: #341846;
+      border-color: #b592cf;
+    }
+    /* 千円札 (リアル青藍シアンブルー・日本銀行券・透かしオーバル・朱印) */
+    .budget-bill.denom-1000 {
+      background:
+        radial-gradient(circle at 75% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 65%),
+        repeating-linear-gradient(45deg, rgba(50, 130, 200, 0.06) 0px, rgba(50, 130, 200, 0.06) 2px, transparent 2px, transparent 6px),
+        linear-gradient(135deg, #f0f7fb 0%, #d8ebf7 40%, #b8dbf2 100%);
+      color: #112d46;
+      border-color: #8cbfe0;
+    }
+
+    .budget-bill-inner-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    .budget-bill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .budget-bill-center {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2px 0;
+    }
+    .budget-bill-title-seal {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .budget-bill-bank-text {
+      font-family: 'Noto Serif JP', 'Yu Mincho', serif;
+      font-weight: 900;
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+    }
+    .budget-bill-seal {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: #dc2626;
+      color: #ffffff;
+      font-size: 0.52rem;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .budget-bill-oval-portrait {
+      width: 32px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 0, 0, 0.25);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+    .budget-bill-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      line-height: 1;
+    }
+    .budget-bill-large-num {
+      font-family: 'JetBrains Mono', 'Segoe UI', sans-serif;
+      font-weight: 900;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ----------------------------------------------------
+       2. REALISTIC JAPANESE YEN COINS (500円・100円・50円・10円・5円・1円)
+       ---------------------------------------------------- */
+    .budget-money-el.budget-coin {
+      position: absolute;
+      border-radius: 50%;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      z-index: 20;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.5), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+      transition: box-shadow 0.15s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', 'Segoe UI', sans-serif;
+      font-weight: 900;
+      position: absolute;
+      overflow: visible;
+    }
+    .budget-money-el.budget-coin:active {
+      cursor: grabbing;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 3px var(--accent-primary);
+      z-index: 100;
+    }
+
+    /* 500円玉 (バイカラークラッド: 外周ニッケル黄銅ゴールド × 内周白銅シルバー) */
+    .budget-coin.denom-500 {
+      width: 56px;
+      height: 56px;
+      background:
+        radial-gradient(circle, #e2e8f0 0%, #cbd5e1 52%, #eab308 53%, #facc15 88%, #ca8a04 100%);
+      color: #1e293b;
+      border: 2px dashed #ca8a04;
+      font-size: 0.88rem;
+    }
+    /* 100円玉 (白銅シルバー・桜レリーフ光沢) */
+    .budget-coin.denom-100 {
+      width: 50px;
+      height: 50px;
+      background:
+        radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 45%, #94a3b8 100%);
+      color: #0f172a;
+      border: 2px solid #cbd5e1;
+      font-size: 0.82rem;
+    }
+    /* 50円玉 (白銅シルバー・中央に実物の穴) */
+    .budget-coin.denom-50 {
+      width: 46px;
+      height: 46px;
+      background:
+        radial-gradient(circle, transparent 6px, #475569 6.5px, #f1f5f9 9px, #cbd5e1 60%, #94a3b8 100%);
+      color: #0f172a;
+      border: 2px solid #cbd5e1;
+      font-size: 0.74rem;
+    }
+    /* 10円玉 (青銅・深い赤銅色・平等院レリーフ) */
+    .budget-coin.denom-10 {
+      width: 48px;
+      height: 48px;
+      background:
+        radial-gradient(circle at 35% 35%, #fed7aa 0%, #c2410c 45%, #7c2d12 85%, #431407 100%);
+      color: #ffedd5;
+      border: 2px solid #ea580c;
+      font-size: 0.78rem;
+    }
+    /* 5円玉 (黄銅真鍮ゴールド・中央に実物の穴・稲穂) */
+    .budget-coin.denom-5 {
+      width: 44px;
+      height: 44px;
+      background:
+        radial-gradient(circle, transparent 6px, #713f12 6.5px, #fef08a 9px, #eab308 65%, #a16207 100%);
+      color: #422006;
+      border: 2px solid #eab308;
+      font-size: 0.74rem;
+    }
+    /* 1円玉 (アルミニウム純白シルバー・若木) */
+    .budget-coin.denom-1 {
+      width: 40px;
+      height: 40px;
+      background:
+        radial-gradient(circle at 35% 35%, #ffffff 0%, #f1f5f9 60%, #cbd5e1 100%);
+      color: #334155;
+      border: 1.5px solid #e2e8f0;
+      font-size: 0.72rem;
+    }
+
+    /* ----------------------------------------------------
+       3. AUTHENTIC JAPANESE ENVELOPE (本物の給料袋・月謝封筒)
+       ---------------------------------------------------- */
+    .budget-container-el.type-envelope {
+      position: absolute;
+      width: 220px;
+      min-height: 148px;
+      padding: 24px 12px 10px;
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      z-index: 12;
+      background:
+        linear-gradient(180deg, rgba(217, 119, 6, 0.08) 0%, transparent 28px),
+        linear-gradient(175deg, #fffbeb 0%, #fef3c7 40%, #fae4a8 100%);
+      border: 2px solid #d97706;
+      box-shadow: 0 10px 24px -6px rgba(180, 83, 9, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #451a03;
+    }
+    /* 封筒の上部フラップ（折り返し）と朱の封印「〆」 */
+    .budget-container-el.type-envelope::before {
+      content: '〆';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 18px;
+      background: #dc2626;
+      color: #ffffff;
+      font-size: 0.64rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      font-family: 'Noto Serif JP', serif;
+    }
+    /* 郵便番号風赤枠 */
+    .envelope-postcode-boxes {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      display: flex;
+      gap: 2px;
+    }
+    .envelope-postcode-box {
+      width: 8px;
+      height: 11px;
+      border: 1px solid #ef4444;
+      border-radius: 1px;
+    }
+
+    /* ----------------------------------------------------
+       4. AUTHENTIC CERAMIC PIGGY BANK (本物の陶器ブタ貯金箱)
+       ---------------------------------------------------- */
+    .budget-container-el.type-piggy {
+      position: absolute;
+      width: 220px;
+      min-height: 148px;
+      padding: 24px 12px 10px;
+      border-radius: 36px 36px 26px 26px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      z-index: 12;
+      background:
+        radial-gradient(circle at 35% 20%, #ffffff 0%, #fff1f2 25%, #fecdd3 55%, #fb7185 88%, #e11d48 100%);
+      border: 2px solid #f43f5e;
+      box-shadow: 0 12px 28px -6px rgba(225, 29, 72, 0.45), 0 3px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #4c0519;
+      position: absolute;
+    }
+    /* 背中のリアルなコイン投入口スリット */
+    .budget-container-el.type-piggy::before {
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 6px;
+      background: #881337;
+      border-radius: 4px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.4);
+    }
+    /* ブタさんの耳（左右） */
+    .piggy-ears-wrap {
+      position: absolute;
+      top: -12px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      pointer-events: none;
+    }
+    .piggy-ear {
+      width: 20px;
+      height: 16px;
+      background: #f43f5e;
+      border: 2px solid #e11d48;
+      border-radius: 12px 12px 0 0;
+      box-shadow: inset 0 2px 4px #fbcfe8;
+    }
+
+
+    /* コインの内部フェイス・文字レイアウト */
+    .budget-coin-face {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .coin-micro-top {
+      font-size: 0.44rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      opacity: 0.85;
+      margin-bottom: 1px;
+    }
+    .coin-num {
+      font-size: 1.05em;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .coin-micro-bottom {
+      font-size: 0.42rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+      margin-top: 1px;
+    }
+    .coin-symbol-mark {
+      font-size: 0.55rem;
+      line-height: 1;
+    }
+
+    /* 50円・5円のリアル中央穴 */
+    .coin-hole-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #1e293b;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+    }
+    .denom-50 .coin-hole-center {
+      background: #0f172a;
+    }
+    .denom-5 .coin-hole-center {
+      background: #180d02;
+    }
+
+    /* 封筒の宛名・罫線スタイル */
+    .envelope-address-area {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px dashed rgba(217, 119, 6, 0.4);
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin: 4px 0;
+      text-align: center;
+    }
+    .envelope-title-text {
+      font-family: 'Noto Serif JP', 'Yu Mincho', serif;
+      font-weight: 800;
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      color: #78350f;
+    }
+
+    /* 貯金箱のブタさんフェイス・ネームプレート */
+    .piggy-nose-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 16px;
+      background: #fda4af;
+      border: 1.5px solid #f43f5e;
+      border-radius: 9px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+      margin-right: 4px;
+    }
+    .piggy-nostrils {
+      display: flex;
+      gap: 4px;
+    }
+    .piggy-nostril {
+      width: 3px;
+      height: 4px;
+      background: #9f1239;
+      border-radius: 2px;
+    }
+    .piggy-plate-area {
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px dashed rgba(244, 63, 94, 0.4);
+      border-radius: 6px;
+      padding: 4px 8px;
+      margin: 4px 0;
+      text-align: center;
+    }
+
+    /* 重ねて束ねる時のターゲットハイライト */
+    .budget-money-el.merge-hover {
+      box-shadow: 0 0 0 3px #10b981, 0 8px 24px rgba(16, 185, 129, 0.5) !important;
+      transform: scale(1.06);
     }
 
   </style>
@@ -8223,7 +9171,7 @@
         </article>
 
         <!-- 7.5 EXERCISE TRACKER CARD (DASHBOARD SYNC) -->
-        <article id="dash-exercise-card" class="bento-card" style="grid-column: span 12;">
+        <article id="dash-exercise-card" class="bento-card span-exercise">
           <div class="card-header">
             <div class="card-title-group">
               <div class="card-icon" style="background:rgba(249,115,22,0.18);color:#f97316;">
@@ -8243,8 +9191,8 @@
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;align-items:center;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div class="dash-ex-body-grid">
+            <div class="dash-ex-stats-row">
               <div class="budget-stat-box">
                 <span class="budget-stat-label">🔥 累計実施日数</span>
                 <span id="dash-ex-total" class="budget-stat-val">0日</span>
@@ -8259,10 +9207,10 @@
               </div>
             </div>
 
-            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-              <input id="dash-ex-detail-input" type="text" class="cal-input" style="flex:2;min-width:160px;" placeholder="運動の詳細 (空欄でも可・例: ラン20分)" />
-              <input id="dash-ex-weight-input" type="number" step="0.1" class="cal-input" style="flex:1;min-width:110px;" placeholder="体重 kg (任意)" />
-              <button type="button" class="ex-fire-btn" style="width:auto;padding:10px 18px;" onclick="submitExerciseFromDashboard(true)">
+            <div class="dash-ex-form-row">
+              <input id="dash-ex-detail-input" type="text" class="cal-input" style="flex:2;min-width:140px;" placeholder="運動の詳細 (空欄でも可・例: ラン20分)" />
+              <input id="dash-ex-weight-input" type="number" step="0.1" class="cal-input" style="flex:1;min-width:100px;" placeholder="体重 kg (任意)" />
+              <button type="button" class="ex-fire-btn dash-ex-submit-btn" style="width:auto;padding:10px 18px;" onclick="submitExerciseFromDashboard(true)">
                 <span>🔥 運動完了を記録</span>
               </button>
             </div>
@@ -8855,7 +9803,7 @@
 
         <!-- 金額入力 → 硬貨・紙幣生成 ＆ 封筒・貯金箱生成コントロール -->
         <div class="budget-controls-row">
-          <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:260px;">
+          <div class="budget-ctrl-group">
             <input id="budget-mint-input" type="number" min="1" step="1" class="cal-input" placeholder="金額を入力 (例: 18650)..." onkeydown="if(event.key==='Enter') mintBudgetAmountFromInput()" />
             <button type="button" class="btn-primary" style="white-space:nowrap;" onclick="mintBudgetAmountFromInput()">
               <i data-lucide="coins" width="15" height="15"></i>
@@ -8863,7 +9811,7 @@
             </button>
           </div>
 
-          <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:280px;">
+          <div class="budget-ctrl-group">
             <input id="budget-container-name-input" type="text" class="cal-input" placeholder="封筒・貯金箱の名前を入力 (例: 旅行積立)..." />
             <button type="button" class="subtle-data-btn" style="white-space:nowrap;padding:9px 12px;" onclick="createBudgetContainer('envelope')">
               <span>✉️ 封筒を生成</span>
@@ -9249,7 +10197,7 @@
           <!-- 海・山・ドライブ・都市・夜景・外国 カテゴリタブ -->
           <div id="scenery-cat-tabs" class="scenery-cat-tabs"></div>
 
-          <div class="news-live-player-wrap">
+          <div class="news-live-frame-wrap">
             <iframe
               id="scenery-yt-iframe"
               title="YouTube 絶景動画プレーヤー"
@@ -9281,10 +10229,6 @@
                 <div style="font-size:0.74rem;color:var(--text-muted);margin-top:2px;">下にスクロールするたびにネットから新しい絶景画像が無限に追加されます（タップで拡大）</div>
               </div>
             </div>
-            <button type="button" class="subtle-data-btn" onclick="appendMoreSceneryPhotos(6)">
-              <i data-lucide="plus" width="14" height="14"></i>
-              <span>さらに絶景画像を追加</span>
-            </button>
           </div>
 
           <div id="scenery-photo-grid" class="scenery-photo-grid"></div>
@@ -9373,12 +10317,12 @@
       <!-- 3. エクササイズ用カレンダー ＆ 記録カード -->
       <div class="calendar-layout">
         <div class="calendar-main-card">
-          <div class="calendar-header-bar">
+          <div class="cal-top-bar calendar-header-bar">
             <div>
               <span class="pill-badge accent" style="margin-bottom:6px;">EXERCISE CALENDAR // メインカレンダー完全同期</span>
               <div id="ex-cal-month-label" class="cal-month-title">2026年 10月</div>
             </div>
-            <div style="display:flex; gap:8px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="nav-action-btn" onclick="changeExerciseCalendarMonth(-1)">
                 <i data-lucide="chevron-left" width="15" height="15"></i>
                 <span>前月</span>
@@ -18359,6 +19303,7 @@ function importAllDataFromJSON(file) {
   let currentSceneryCatId = 'ocean';
   let currentSceneryVideo = null;
   let sceneryPhotoSeedCounter = 100;
+  let sceneryPhotoIndex = 0; // 必ず #1 から始まるカウンタ
   let sceneryObserver = null;
 
   const SCENERY_CURATED_PHOTOS = [
@@ -18378,6 +19323,7 @@ function importAllDataFromJSON(file) {
 
   function selectSceneryCategory(catId, pickRandomVideo = true) {
     currentSceneryCatId = catId;
+    sceneryPhotoIndex = 0; // カテゴリ切り替え時に #1 からリセット
     const cat = SCENERY_CATEGORIES.find(c => c.id === catId) || SCENERY_CATEGORIES[0];
 
     const tabsEl = $('scenery-cat-tabs');
@@ -18436,13 +19382,13 @@ function importAllDataFromJSON(file) {
 
     for (let i = 0; i < count; i++) {
       sceneryPhotoSeedCounter++;
+      sceneryPhotoIndex++; // 1から順にインクリメント
       const seed = `${cat.id}-${sceneryPhotoSeedCounter}-${Math.floor(Math.random() * 9999)}`;
-      // 初回はUnsplash高画質絶景、スクロール追加時は無限のランダム絶景シード画像を組み合わせて毎回新しい絶景を生成
-      const imgUrl = sceneryPhotoSeedCounter <= SCENERY_CURATED_PHOTOS.length + 100
-        ? SCENERY_CURATED_PHOTOS[(sceneryPhotoSeedCounter - 101) % SCENERY_CURATED_PHOTOS.length]
+      const imgUrl = sceneryPhotoIndex <= SCENERY_CURATED_PHOTOS.length
+        ? SCENERY_CURATED_PHOTOS[(sceneryPhotoIndex - 1) % SCENERY_CURATED_PHOTOS.length]
         : `https://picsum.photos/seed/${encodeURIComponent(seed)}/960/600`;
 
-      const title = `${cat.label} 絶景フォト #${sceneryPhotoSeedCounter - 100}`;
+      const title = `${cat.label} 絶景フォト #${sceneryPhotoIndex}`;
       const card = document.createElement('div');
       card.className = 'scenery-photo-card';
       card.innerHTML = `
@@ -19034,13 +19980,25 @@ function importAllDataFromJSON(file) {
     // 既存の動的要素をクリア（バンクゾーンは残す）
     board.querySelectorAll('.budget-money-el, .budget-container-el').forEach(el => el.remove());
 
+    // ボードの現在の幅・高さを取得して、狭い画面幅でもはみ出さないように表示座標を自動クランプ
+    const boardW = board.clientWidth || 0;
+    const boardH = board.clientHeight || 0;
+
     // 1. 封筒・貯金箱を描画
-    budgetData.containers.forEach(cont => {
+    budgetData.containers.forEach((cont, cIdx) => {
       const el = document.createElement('div');
-      el.className = `budget-container-el type-${cont.type === 'piggy' ? 'piggy' : 'envelope'}`;
+      const isPiggy = cont.type === 'piggy';
+      el.className = `budget-container-el type-${isPiggy ? 'piggy' : 'envelope'}`;
       el.dataset.containerId = cont.id;
-      el.style.left = `${cont.x || 40}px`;
-      el.style.top = `${cont.y || 220}px`;
+      const contW = window.innerWidth <= 480 ? 185 : 220;
+      const maxContX = boardW > contW + 16 ? boardW - contW - 10 : Math.max(8, boardW - contW - 6);
+      const maxContY = boardH > 180 ? boardH - 165 : 320;
+      const rawContX = cont.x ?? (24 + (cIdx % 2) * 200);
+      const rawContY = cont.y ?? 210;
+      const safeContX = boardW > 0 ? Math.max(8, Math.min(maxContX, rawContX)) : rawContX;
+      const safeContY = boardH > 0 ? Math.max(12, Math.min(maxContY, rawContY)) : rawContY;
+      el.style.left = `${safeContX}px`;
+      el.style.top = `${safeContY}px`;
 
       const totalInside = calcContainerTotal(cont);
       const chipsHtml = DENOMINATIONS
@@ -19051,25 +20009,68 @@ function importAllDataFromJSON(file) {
         })
         .join('');
 
-      el.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
-          <div style="font-size:0.82rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-            ${cont.type === 'piggy' ? '🐷' : '✉️'} ${esc(cont.name)}
+      if (isPiggy) {
+        el.innerHTML = `
+          <div class="piggy-ears-wrap">
+            <div class="piggy-ear"></div>
+            <div class="piggy-ear"></div>
           </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:0.84rem;font-weight:900;color:var(--accent-primary);">
-            ${formatYen(totalInside)}
-          </span>
-        </div>
-        <div class="budget-container-visual-coins">
-          ${chipsHtml || '<span style="font-size:0.68rem;color:var(--text-muted);">ここへお金をドラッグして投入</span>'}
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
-          <button type="button" class="budget-mini-act-btn" onclick="event.stopPropagation(); openBudgetContainerModal('${cont.id}')">
-            📂 編集・取り出す
-          </button>
-          <span style="font-size:0.62rem;color:var(--text-muted);">ドラッグで移動</span>
-        </div>
-      `;
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:2;">
+            <div style="display:flex;align-items:center;font-size:0.82rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              <span class="piggy-nose-badge" title="ブタの鼻">
+                <span class="piggy-nostrils"><span class="piggy-nostril"></span><span class="piggy-nostril"></span></span>
+              </span>
+              <span>${esc(cont.name)}</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.84rem;font-weight:900;color:#9f1239;">
+              ${formatYen(totalInside)}
+            </span>
+          </div>
+          <div class="piggy-plate-area">
+            <div class="budget-container-visual-coins" style="margin:0;">
+              ${chipsHtml || '<span style="font-size:0.68rem;color:#be123c;">お金をスリットにドラッグして投入</span>'}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;position:relative;z-index:2;">
+            <button type="button" class="budget-mini-act-btn" onclick="event.stopPropagation(); openBudgetContainerModal('${cont.id}')">
+              📂 中身を見る・出す
+            </button>
+            <span style="font-size:0.62rem;color:#881337;font-weight:700;">ドラッグ移動</span>
+          </div>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="envelope-postcode-boxes">
+            <span class="envelope-postcode-box"></span>
+            <span class="envelope-postcode-box"></span>
+            <span class="envelope-postcode-box"></span>
+            <span style="font-size:0.5rem;color:#ef4444;line-height:1;">-</span>
+            <span class="envelope-postcode-box"></span>
+            <span class="envelope-postcode-box"></span>
+            <span class="envelope-postcode-box"></span>
+            <span class="envelope-postcode-box"></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;position:relative;z-index:2;">
+            <div class="envelope-title-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              ✉️ ${esc(cont.name)}
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.84rem;font-weight:900;color:#b45309;">
+              ${formatYen(totalInside)}
+            </span>
+          </div>
+          <div class="envelope-address-area">
+            <div class="budget-container-visual-coins" style="margin:0;">
+              ${chipsHtml || '<span style="font-size:0.68rem;color:#92400e;">お金を封筒へドラッグして投入</span>'}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:4px;position:relative;z-index:2;">
+            <button type="button" class="budget-mini-act-btn" onclick="event.stopPropagation(); openBudgetContainerModal('${cont.id}')">
+              📂 編集・取り出す
+            </button>
+            <span style="font-size:0.62rem;color:#92400e;font-weight:700;">ドラッグ移動</span>
+          </div>
+        `;
+      }
 
       setupBudgetContainerDrag(el, cont);
       board.appendChild(el);
@@ -19084,8 +20085,17 @@ function importAllDataFromJSON(file) {
       const el = document.createElement('div');
       el.className = `budget-money-el ${isBill ? 'budget-bill' : 'budget-coin'} denom-${item.denom} ${selectedBudgetMoneyId === item.id ? 'selected' : ''}`;
       el.dataset.moneyId = item.id;
-      el.style.left = `${item.x || 40}px`;
-      el.style.top = `${item.y || 40}px`;
+      el.dataset.denom = item.denom;
+      const itemW = isBill ? (window.innerWidth <= 480 ? 118 : 140) : 56;
+      const itemH = isBill ? 72 : 56;
+      const maxItemX = boardW > itemW + 16 ? boardW - itemW - 10 : Math.max(6, boardW - itemW - 4);
+      const maxItemY = boardH > itemH + 24 ? boardH - itemH - 12 : 380;
+      const rawItemX = item.x ?? 32;
+      const rawItemY = item.y ?? 36;
+      const safeItemX = boardW > 0 ? Math.max(6, Math.min(maxItemX, rawItemX)) : rawItemX;
+      const safeItemY = boardH > 0 ? Math.max(6, Math.min(maxItemY, rawItemY)) : rawItemY;
+      el.style.left = `${safeItemX}px`;
+      el.style.top = `${safeItemY}px`;
 
       const canExchange = Boolean(EXCHANGE_MAP[item.denom]);
       const badgeHtml = count > 1
@@ -19100,20 +20110,89 @@ function importAllDataFromJSON(file) {
       `;
 
       if (isBill) {
-        const labelMap = { 10000: '壱万円', 5000: '五千円', 1000: '千円' };
+        const kanjiMap = { 10000: '壱万円', 5000: '五千円', 1000: '千円' };
+        const kanji = kanjiMap[item.denom] || `${item.denom}円`;
         el.innerHTML = `
           ${badgeHtml}
-          <div class="budget-bill-top">
-            <span>NIPPON GINKO</span>
-            <span>${labelMap[item.denom] || ''}</span>
+          <div class="budget-bill-inner-wrap">
+            <div class="budget-bill-header">
+              <span class="budget-bill-corner-num">${item.denom.toLocaleString()}</span>
+              <span class="budget-bill-bank-text">日本銀行券</span>
+              <span class="budget-bill-kanji">${kanji}</span>
+            </div>
+            <div class="budget-bill-center">
+              <div class="budget-bill-title-seal">
+                <span class="budget-bill-seal">総裁<br>之印</span>
+                <span class="budget-bill-sub-text" style="font-size:0.68rem;font-weight:900;">${kanji}</span>
+              </div>
+              <div class="budget-bill-oval-portrait" title="透かし肖像">
+                <span style="font-size:0.78rem;opacity:0.4;">👤</span>
+              </div>
+            </div>
+            <div class="budget-bill-bottom">
+              <span style="font-size:0.55rem;letter-spacing:0.06em;opacity:0.8;font-weight:700;">NIPPON GINKO</span>
+              <span class="budget-bill-large-num">¥${item.denom.toLocaleString()}</span>
+            </div>
           </div>
-          <div class="budget-bill-val">¥${item.denom.toLocaleString()}</div>
           ${actionsHtml}
         `;
       } else {
+        // 硬貨（500, 100, 50, 10, 5, 1）
+        let coinInnerHtml = '';
+        if (item.denom === 500) {
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <span class="coin-micro-top">NIPPON</span>
+              <span class="coin-num">500</span>
+              <span class="coin-micro-bottom">500 YEN</span>
+            </div>
+          `;
+        } else if (item.denom === 100) {
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <span class="coin-symbol-mark" title="桜">🌸</span>
+              <span class="coin-num">100</span>
+              <span class="coin-micro-bottom">100 YEN</span>
+            </div>
+          `;
+        } else if (item.denom === 50) {
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <div class="coin-hole-center"></div>
+              <span class="coin-micro-top" style="position:relative;z-index:2;">50</span>
+              <span class="coin-micro-bottom" style="margin-top:12px;position:relative;z-index:2;">YEN</span>
+            </div>
+          `;
+        } else if (item.denom === 10) {
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <span class="coin-num">10</span>
+              <span class="coin-symbol-mark" title="平等院鳳凰堂">⛩️</span>
+              <span class="coin-micro-bottom">10 YEN</span>
+            </div>
+          `;
+        } else if (item.denom === 5) {
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <div class="coin-hole-center"></div>
+              <span class="coin-symbol-mark" style="position:relative;z-index:2;font-size:0.5rem;" title="稲穂">🌾</span>
+              <span class="coin-micro-bottom" style="margin-top:12px;position:relative;z-index:2;font-weight:900;">五円</span>
+            </div>
+          `;
+        } else {
+          // 1円
+          coinInnerHtml = `
+            <div class="budget-coin-face">
+              <span class="coin-symbol-mark" title="若木">🌱</span>
+              <span class="coin-num">1</span>
+              <span class="coin-micro-bottom">1 YEN</span>
+            </div>
+          `;
+        }
+
         el.innerHTML = `
           ${badgeHtml}
-          <span>¥${item.denom}</span>
+          ${coinInnerHtml}
           ${actionsHtml}
         `;
       }
@@ -19129,11 +20208,15 @@ function importAllDataFromJSON(file) {
     let origLeft = item.x || 0;
     let origTop = item.y || 0;
     let isDragging = false;
+    let holdTimerId = null;
+    let rAFId = null;
+    let curX = item.x || 0;
+    let curY = item.y || 0;
 
-    const clearHoldBundle = () => {
-      if (bundleHoldIntervalId) {
-        clearInterval(bundleHoldIntervalId);
-        bundleHoldIntervalId = null;
+    const clearHoldTimer = () => {
+      if (holdTimerId) {
+        clearTimeout(holdTimerId);
+        holdTimerId = null;
       }
       el.classList.remove('bundling-hold');
     };
@@ -19148,65 +20231,80 @@ function importAllDataFromJSON(file) {
       startY = e.clientY;
       origLeft = item.x || 0;
       origTop = item.y || 0;
+      curX = origLeft;
+      curY = origTop;
       isDragging = false;
 
       el.setPointerCapture(e.pointerId);
       el.classList.add('selected');
 
-      // 長押し（0.2秒ごと）に同じ種類のお金を1枚ずつ束ねる
-      clearHoldBundle();
-      el.classList.add('bundling-hold');
-      bundleHoldIntervalId = setInterval(() => {
-        if (isDragging) {
-          clearHoldBundle();
-          return;
-        }
+      // 安全な長押し体験：動かさずに 600ms 押し続けた場合のみ、ボード上の同じ金種を1つ引き寄せて合体
+      clearHoldTimer();
+      holdTimerId = setTimeout(() => {
+        if (isDragging) return;
         const otherIdx = budgetData.moneyItems.findIndex(m => m.id !== item.id && m.denom === item.denom);
-        if (otherIdx < 0) {
-          clearHoldBundle();
-          return;
+        if (otherIdx >= 0) {
+          const other = budgetData.moneyItems[otherIdx];
+          item.count = (item.count || 1) + 1;
+          if ((other.count || 1) > 1) {
+            other.count -= 1;
+          } else {
+            budgetData.moneyItems.splice(otherIdx, 1);
+          }
+          saveBudgetData();
+          renderBudgetWhiteboard();
+          toast('📦 束ねました', `${formatYen(item.denom)} を束ねました（現在 ×${item.count}枚）。`, 'layers');
         }
-        const other = budgetData.moneyItems[otherIdx];
-        item.count = (item.count || 1) + 1;
-        if ((other.count || 1) > 1) {
-          other.count -= 1;
-        } else {
-          budgetData.moneyItems.splice(otherIdx, 1);
-        }
-        saveBudgetData();
-        renderBudgetWhiteboard();
-      }, 200);
+      }, 600);
     });
 
     el.addEventListener('pointermove', (e) => {
       if (!el.hasPointerCapture(e.pointerId)) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      if (Math.hypot(dx, dy) > 6) {
+
+      // わずかなブレではドラッグ判定しない
+      if (!isDragging && Math.hypot(dx, dy) > 5) {
         isDragging = true;
-        clearHoldBundle();
+        clearHoldTimer();
       }
       if (!isDragging) return;
 
       const board = $('budget-whiteboard');
       const maxW = (board?.clientWidth || 700) - el.offsetWidth - 6;
       const maxH = (board?.clientHeight || 550) - el.offsetHeight - 6;
-      item.x = Math.max(6, Math.min(maxW, Math.round(origLeft + dx)));
-      item.y = Math.max(6, Math.min(maxH, Math.round(origTop + dy)));
-      el.style.left = `${item.x}px`;
-      el.style.top = `${item.y}px`;
+      curX = Math.max(6, Math.min(maxW, Math.round(origLeft + dx)));
+      curY = Math.max(6, Math.min(maxH, Math.round(origTop + dy)));
 
-      highlightDropTargets(e.clientX, e.clientY);
+      // rAFでドラッグ描画を最適化（高フレームレート追従）
+      if (!rAFId) {
+        rAFId = requestAnimationFrame(() => {
+          el.style.left = `${curX}px`;
+          el.style.top = `${curY}px`;
+          item.x = curX;
+          item.y = curY;
+          rAFId = null;
+        });
+      }
+
+      highlightDropTargets(e.clientX, e.clientY, item);
     });
 
     const finishPointer = (e) => {
-      clearHoldBundle();
+      clearHoldTimer();
       clearDropTargetHighlights();
+      if (rAFId) {
+        cancelAnimationFrame(rAFId);
+        rAFId = null;
+      }
       if (!el.hasPointerCapture(e.pointerId)) return;
       try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+      el.classList.remove('selected');
 
       if (isDragging) {
-        // バンクまたは封筒・貯金箱へのドロップ判定
+        item.x = curX;
+        item.y = curY;
+        // バンク・封筒・貯金箱・または同種お金へのドロップ判定
         const dropResult = checkBudgetDropTarget(e.clientX, e.clientY, item);
         if (dropResult) return;
         saveBudgetData();
@@ -19223,6 +20321,9 @@ function importAllDataFromJSON(file) {
     let origLeft = cont.x || 0;
     let origTop = cont.y || 0;
     let moved = false;
+    let rAFId = null;
+    let curX = cont.x || 0;
+    let curY = cont.y || 0;
 
     el.addEventListener('pointerdown', (e) => {
       if (e.target.closest('button')) return;
@@ -19232,6 +20333,8 @@ function importAllDataFromJSON(file) {
       startY = e.clientY;
       origLeft = cont.x || 0;
       origTop = cont.y || 0;
+      curX = origLeft;
+      curY = origTop;
       moved = false;
       el.setPointerCapture(e.pointerId);
     });
@@ -19246,16 +20349,30 @@ function importAllDataFromJSON(file) {
       const board = $('budget-whiteboard');
       const maxW = (board?.clientWidth || 700) - el.offsetWidth - 8;
       const maxH = (board?.clientHeight || 550) - el.offsetHeight - 8;
-      cont.x = Math.max(6, Math.min(maxW, Math.round(origLeft + dx)));
-      cont.y = Math.max(6, Math.min(maxH, Math.round(origTop + dy)));
-      el.style.left = `${cont.x}px`;
-      el.style.top = `${cont.y}px`;
+      curX = Math.max(6, Math.min(maxW, Math.round(origLeft + dx)));
+      curY = Math.max(6, Math.min(maxH, Math.round(origTop + dy)));
+
+      if (!rAFId) {
+        rAFId = requestAnimationFrame(() => {
+          el.style.left = `${curX}px`;
+          el.style.top = `${curY}px`;
+          cont.x = curX;
+          cont.y = curY;
+          rAFId = null;
+        });
+      }
     });
 
     el.addEventListener('pointerup', (e) => {
+      if (rAFId) {
+        cancelAnimationFrame(rAFId);
+        rAFId = null;
+      }
       if (!el.hasPointerCapture(e.pointerId)) return;
       try { el.releasePointerCapture(e.pointerId); } catch (err) {}
       if (moved) {
+        cont.x = curX;
+        cont.y = curY;
         saveBudgetData();
       } else {
         openBudgetContainerModal(cont.id);
@@ -19267,7 +20384,7 @@ function importAllDataFromJSON(file) {
     return rect && x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
   }
 
-  function highlightDropTargets(clientX, clientY) {
+  function highlightDropTargets(clientX, clientY, currentItem = null) {
     const bankEl = $('budget-bank-zone');
     if (bankEl) {
       bankEl.classList.toggle('drop-hover', isPointInRect(clientX, clientY, bankEl.getBoundingClientRect()));
@@ -19275,11 +20392,24 @@ function importAllDataFromJSON(file) {
     document.querySelectorAll('#budget-whiteboard .budget-container-el').forEach(cEl => {
       cEl.classList.toggle('drop-hover', isPointInRect(clientX, clientY, cEl.getBoundingClientRect()));
     });
+    // 同種お金の重なりハイライト
+    if (currentItem) {
+      document.querySelectorAll('#budget-whiteboard .budget-money-el').forEach(mEl => {
+        if (mEl.dataset.moneyId === currentItem.id) {
+          mEl.classList.remove('merge-hover');
+          return;
+        }
+        const sameDenom = Number(mEl.dataset.denom) === currentItem.denom;
+        const isHover = sameDenom && isPointInRect(clientX, clientY, mEl.getBoundingClientRect());
+        mEl.classList.toggle('merge-hover', isHover);
+      });
+    }
   }
 
   function clearDropTargetHighlights() {
     $('budget-bank-zone')?.classList.remove('drop-hover');
     document.querySelectorAll('#budget-whiteboard .budget-container-el').forEach(cEl => cEl.classList.remove('drop-hover'));
+    document.querySelectorAll('#budget-whiteboard .budget-money-el').forEach(mEl => mEl.classList.remove('merge-hover'));
   }
 
   function checkBudgetDropTarget(clientX, clientY, item) {
@@ -19317,6 +20447,26 @@ function importAllDataFromJSON(file) {
         }
       }
     }
+
+    // 3. 同じ種類のお金同士の重ねドロップ（マージ・合体）判定
+    const moneyEls = Array.from(document.querySelectorAll('#budget-whiteboard .budget-money-el'));
+    for (const mEl of moneyEls) {
+      if (mEl.dataset.moneyId === item.id) continue;
+      if (Number(mEl.dataset.denom) !== item.denom) continue;
+      if (isPointInRect(clientX, clientY, mEl.getBoundingClientRect())) {
+        const targetId = mEl.dataset.moneyId;
+        const targetMoney = budgetData.moneyItems.find(m => m.id === targetId);
+        if (targetMoney) {
+          targetMoney.count = (targetMoney.count || 1) + (item.count || 1);
+          budgetData.moneyItems = budgetData.moneyItems.filter(m => m.id !== item.id);
+          saveBudgetData();
+          renderBudgetWhiteboard();
+          toast('📦 束ねました', `${formatYen(item.denom)} を合体してまとめました（合計 ×${targetMoney.count}枚）。`, 'layers');
+          return true;
+        }
+      }
+    }
+
     return false;
   }
 
@@ -19922,21 +21072,44 @@ function importAllDataFromJSON(file) {
       }
     });
 
-    // 連続ストリーク計算
+    // 連続ストリーク計算 (1週間＝7日以上運動しなかった場合のみリセット)
     let streak = 0;
-    const cursor = new Date();
-    for (let i = 0; i < 365; i++) {
-      const dStr = formatYMD(cursor);
-      if (exerciseData.records?.[dStr]?.done) {
-        streak++;
-        cursor.setDate(cursor.getDate() - 1);
-      } else {
-        if (i === 0) {
-          // 今日まだ未記録なら昨日からの連続を確認
-          cursor.setDate(cursor.getDate() - 1);
-          continue;
+    // 運動実施日（done: true）を抽出して降順ソート
+    const doneDateList = [];
+    Object.keys(exerciseData.records || {}).forEach(dStr => {
+      if (exerciseData.records[dStr]?.done) {
+        doneDateList.push(dStr);
+      }
+    });
+
+    if (doneDateList.length > 0) {
+      doneDateList.sort().reverse(); // 最新が先頭
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const [ly, lm, ld] = doneDateList[0].split('-').map(Number);
+      const latestDoneDate = new Date(ly, lm - 1, ld);
+      const diffDaysFromToday = Math.floor((today.getTime() - latestDoneDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      // 今日時点で最後の運動日から7日以上(1週間)あいていればリセット (0)
+      if (diffDaysFromToday < 7) {
+        streak = 1;
+        for (let k = 0; k < doneDateList.length - 1; k++) {
+          const [cy, cm, cd] = doneDateList[k].split('-').map(Number);
+          const [py, pm, pd] = doneDateList[k + 1].split('-').map(Number);
+          const curr = new Date(cy, cm - 1, cd);
+          const prev = new Date(py, pm - 1, pd);
+          const gapDays = Math.floor((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+          // 前回運動からの間隔が7日以内(1週間以内)なら継続
+          if (gapDays <= 7) {
+            streak++;
+          } else {
+            // 1週間以上空いたためストリーク終了
+            break;
+          }
         }
-        break;
+      } else {
+        streak = 0;
       }
     }
 
@@ -20619,6 +21792,24 @@ function importAllDataFromJSON(file) {
     initSceneryInfiniteScroll();
     renderWatchlistView();
     renderBudgetWhiteboard();
+
+    // ウィンドウ幅リサイズ時にもレイアウトとホワイトボード座標を自動最適化
+    let resizeDebounceTimer = null;
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1060 && typeof closeMobileMenu === 'function') {
+        closeMobileMenu();
+      }
+      if (resizeDebounceTimer) clearTimeout(resizeDebounceTimer);
+      resizeDebounceTimer = setTimeout(() => {
+        const budgetSec = document.getElementById('view-budget');
+        if (budgetSec && budgetSec.classList.contains('active')) {
+          renderBudgetWhiteboard();
+        }
+        if (typeof updateCalendarMarqueeMeasurements === 'function') {
+          updateCalendarMarqueeMeasurements();
+        }
+      }, 120);
+    });
 
     refreshIcons();
   });
